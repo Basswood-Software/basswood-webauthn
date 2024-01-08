@@ -1,0 +1,24 @@
+version: '2.21'
+networks:
+  app-network:
+    driver: bridge
+services:
+  authenticator:
+    image: basswood/authenticator
+    container_name: authenticator
+    environment:
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=*:5006,server=y,suspend=n"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9090:9090"
+      - "5006:5006"
+    networks:
+      - app-network
+    healthcheck:
+      test: curl --fail http://localhost:9090/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 10

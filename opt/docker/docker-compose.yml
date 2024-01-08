@@ -1,0 +1,71 @@
+version: '2.21'
+networks:
+  app-network:
+    driver: bridge
+services:
+  mysqldb:
+    image: mysql:8.2
+    container_name: mysql-database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: basswood
+      MYSQL_DATABASE: webauthn_basswood
+      MYSQL_USER: basswood
+      MYSQL_PASSWORD: basswood
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    volumes:
+      - $PWD/data:/var/lib/mysql
+    healthcheck:
+      test: "mysql --user=basswood --password=basswood --execute 'show databases;'"
+      interval: 3s
+      timeout: 10s
+      retries: 10
+
+  webauthn:
+    image: basswood/webauthn
+    container_name: webauthn
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    environment:
+      - BASSWOOD_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/webauthn_basswood
+      - BASSWOOD_DATASOURCE_USER=basswood
+      - BASSWOOD_DATASOURCE_PASSWORD=basswood
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9080:9080"
+      - "5005:5005"
+    networks:
+      - app-network
+    healthcheck:
+      test: curl --fail http://localhost:9080/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  authenticator:
+    image: basswood/authenticator
+    container_name: authenticator
+    environment:
+      - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=*:5006,server=y,suspend=n"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9090:9090"
+      - "5006:5006"
+    networks:
+      - app-network
+    healthcheck:
+      test: curl --fail http://localhost:9090/actuator/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 10

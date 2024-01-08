@@ -1,4 +1,3 @@
-DROP SCHEMA IF EXISTS webauthn_basswood;
 CREATE SCHEMA IF NOT EXISTS webauthn_basswood;
 USE webauthn_basswood;
 

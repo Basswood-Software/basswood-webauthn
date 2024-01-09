@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-readonly work_dir="$(cd $(dirname $0) && pwd)"
-readonly docker_dir="$(dirname $work_dir)/docker"
+readonly docker_dir="$(cd $(dirname $0) && pwd)"
 cd $docker_dir
 #echo "Shutting down docker containers......."
 #docker-compose stop

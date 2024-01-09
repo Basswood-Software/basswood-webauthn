@@ -4,14 +4,9 @@ networks:
     driver: bridge
 services:
   mysqldb:
-    image: mysql:8.2
+    image: basswood/mysqldb
     container_name: mysql-database
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: basswood
-      MYSQL_DATABASE: webauthn_basswood
-      MYSQL_USER: basswood
-      MYSQL_PASSWORD: basswood
     ports:
       - "3306:3306"
     networks:
@@ -19,7 +14,7 @@ services:
     volumes:
       - $PWD/data:/var/lib/mysql
     healthcheck:
-      test: "mysql --user=basswood --password=basswood --execute 'show databases;'"
+      test: "mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute 'show databases;'"
       interval: 3s
       timeout: 10s
       retries: 10

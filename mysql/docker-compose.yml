@@ -1,0 +1,20 @@
+version: '2.21'
+networks:
+  app-network:
+    driver: bridge
+services:
+  mysqldb:
+    image: basswood/mysqldb
+    container_name: mysql-database
+    restart: always
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    volumes:
+      - /Users/shamualr/wspace/github/poc/basswood-webauthn/opt/docker/data:/var/lib/mysql
+    healthcheck:
+      test: "mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute 'show databases;'"
+      interval: 3s
+      timeout: 10s
+      retries: 10

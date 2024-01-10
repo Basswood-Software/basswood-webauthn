@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 readonly work_dir="$(cd $(dirname $0) && pwd)"
 cd $work_dir
-readonly container_name=mysql-database
+readonly container_name=mysqldb
 readonly rootpwd=basswood
 readonly username=basswood
 readonly password=basswood

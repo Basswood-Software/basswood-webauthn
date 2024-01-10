@@ -5,7 +5,7 @@ networks:
 services:
   mysqldb:
     image: mysql:8.2
-    container_name: mysql-database
+    container_name: mysqldb
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: basswood

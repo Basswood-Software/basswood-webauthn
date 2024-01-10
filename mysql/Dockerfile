@@ -7,4 +7,8 @@ ENV MYSQL_DATABASE webauthn_basswood
 ENV MYSQL_USER basswood
 ENV MYSQL_PASSWORD basswood
 
-COPY database.sql /docker-entrypoint-initdb.d
+VOLUME /opt
+
+COPY sql-01-setup-users.sql /docker-entrypoint-initdb.d
+COPY sql-02-setup-schema.sql /docker-entrypoint-initdb.d
+COPY health-check.sh /opt

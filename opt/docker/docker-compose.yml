@@ -14,8 +14,8 @@ services:
     volumes:
       - $PWD/data:/var/lib/mysql
     healthcheck:
-      test: "mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute 'show databases;'"
-      interval: 3s
+      test: /opt/health-check.sh || exit 1
+      interval: 10s
       timeout: 10s
       retries: 10
 
@@ -41,7 +41,7 @@ services:
       - app-network
     healthcheck:
       test: curl --fail http://localhost:9080/actuator/health || exit 1
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 10
 
@@ -61,6 +61,6 @@ services:
       - app-network
     healthcheck:
       test: curl --fail http://localhost:9090/actuator/health || exit 1
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 10

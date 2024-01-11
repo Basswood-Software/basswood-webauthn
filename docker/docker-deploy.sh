@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 readonly work_dir="$(cd $(dirname $0) && pwd)"
-readonly project_root="$(cd ${work_dir}/../.. && pwd)"
-readonly docker_dir="${project_root}/opt/docker"
+readonly project_root="$(cd ${work_dir}/.. && pwd)"
+readonly docker_dir="${project_root}/docker"
 readonly mysql_dir="${project_root}/mysql"
 readonly webauthn_dir="${project_root}/webauthn"
 readonly authenticator_dir="${project_root}/authenticator"
@@ -15,14 +15,14 @@ if (($? != 0 ));then
 fi
 
 # Build webauthn module
-${webauthn_dir}/opt/docker/docker-build.sh
+${webauthn_dir}/docker/docker-build.sh
 if (($? != 0 ));then
   echo "webauthn module build failed."
   exit 2
 fi
 
 # Build authenticator module
-${authenticator_dir}/opt/docker/docker-build.sh
+${authenticator_dir}/docker/docker-build.sh
 if (($? != 0 ));then
   echo "authenticator module build failed."
   exit 3

@@ -12,9 +12,9 @@ services:
     networks:
       - app-network
     volumes:
-      - /Users/shamualr/wspace/github/poc/basswood-webauthn/opt/docker/data:/var/lib/mysql
+      - $PWD/data:/var/lib/mysql
     healthcheck:
-      test: "mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute 'show databases;'"
-      interval: 3s
+      test: /opt/health-check.sh || exit 1
+      interval: 10s
       timeout: 10s
       retries: 10

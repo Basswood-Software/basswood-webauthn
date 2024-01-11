@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 readonly work_dir="$(cd $(dirname $0) && pwd)"
-readonly project_dir="$(cd ${work_dir}/../.. && pwd)"
+readonly project_dir="$(cd ${work_dir}/.. && pwd)"
 readonly target_dir="${project_dir}/target"
-readonly service_name=webauthn
+readonly service_name=authenticator
 
 cd $project_dir
 echo "Building the maven project....."
@@ -26,6 +26,7 @@ if [ -z "$startup_script" ];then
 fi
 
 log_config_file=$(tar -tf $tarball | grep log4j2-spring.xml)
+echo "log_config_file=$log_config_file"
 echo "Building docker image....."
 
 docker container rm $service_name

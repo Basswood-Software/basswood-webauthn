@@ -9,8 +9,6 @@ ENV LAUNCH_SCRIPT $STARTUP_SCRIPT
 ENV LOGGING_CONFIG $LOGGING_CONFIG_ARG
 ENV SPRING_APPLICATION_NAME authenticator
 
-RUN apt-get update &&  apt-get install -y netcat
-
 # Add a volume pointing to /opt
 VOLUME /opt
 

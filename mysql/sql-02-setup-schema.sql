@@ -62,3 +62,11 @@ CREATE TABLE `webauthn_authenticator_transport` (
   UNIQUE KEY `uniq_credential_id_transport` (`credentialId`,`transport`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `webauthn_jwk` (
+  `kid` varchar(128) NOT NULL PRIMARY KEY,
+  `kty` varchar(16) NOT NULL,
+  `keyUse` varchar(16) NOT NULL,
+  `createdTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expiryTime` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP + INTERVAL 30 DAY),
+  `jwkData` text(2048) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

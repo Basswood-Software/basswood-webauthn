@@ -39,7 +39,7 @@ public interface AlgorithmSelectionStrategy {
                 throw new RootException("Unsupported Curve: " + ecKey.getCurve());
             }
         }
-        throw new RootException("Unsupported KeyType: " + jwk.getKeyType());
+        throw new RootException("Unsupported KeyTypeEnum: " + jwk.getKeyType());
     }
 
     default JWEAlgorithm encryptionAlgorithm(JWK jwk) {
@@ -48,7 +48,7 @@ public interface AlgorithmSelectionStrategy {
         } else if (jwk.getKeyType() == KeyType.EC) {
             return JWEAlgorithm.ECDH_ES_A256KW;
         }
-        throw new RootException("Unsupported KeyType: " + jwk.getKeyType());
+        throw new RootException("Unsupported KeyTypeEnum: " + jwk.getKeyType());
     }
 
     default JWSSigner signer(JWK jwk) {

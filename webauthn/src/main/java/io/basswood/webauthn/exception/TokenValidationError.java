@@ -15,4 +15,7 @@ public class TokenValidationError extends RootException {
     public TokenValidationError(String message, Throwable cause) {
         super(message, cause, ErrorCode.token_validation_error, HttpStatus.UNAUTHORIZED.value());
     }
+    public TokenValidationError(String message, Throwable cause, int httpStatus) {
+        super(message, cause, ErrorCode.token_validation_error, httpStatus);
+    }
 }

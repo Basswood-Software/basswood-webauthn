@@ -28,8 +28,14 @@ services:
     environment:
       - BASSWOOD_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/webauthn_basswood
       - BASSWOOD_DATASOURCE_USER=basswood
-      - BASSWOOD_DATASOURCE_PASSWORD=basswood
+      - BASSWOOD_SECURITY_KEYSTORE_KEYSTOREFILE=file:///opt/basswood/keystore/basswood-not-for-production-keystore.p12
+      - BASSWOOD_SECURITY_KEYSTORE_KEYSTORECONFIGFILE=file:///opt/basswood/keystore/keystore-config.json
+      - BASSWOOD_SECURITY_KEYSTORE_LOADJWKFILEONSTARTUP=true
+      - BASSWOOD_SECURITY_JWT_FILTER_DISABLE=false
+      - BASSWOOD_SECURITY_JWT_PRINTNEWTOKENONSTARTUP=false
       - JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=*:5005,server=y,suspend=n"
+    volumes:
+      - ./secrets:/opt/basswood/keystore
     ulimits:
       memlock:
         soft: -1

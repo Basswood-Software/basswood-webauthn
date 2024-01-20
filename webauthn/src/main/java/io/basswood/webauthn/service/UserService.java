@@ -1,6 +1,7 @@
 package io.basswood.webauthn.service;
 
 import io.basswood.webauthn.exception.BadRequest;
+import io.basswood.webauthn.exception.DuplicateEntityFound;
 import io.basswood.webauthn.model.user.User;
 import io.basswood.webauthn.model.user.Username;
 import io.basswood.webauthn.repository.UserRepository;
@@ -8,7 +9,9 @@ import io.basswood.webauthn.repository.UsernameRepository;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author shamualr
@@ -42,6 +45,12 @@ public class UserService {
         }
         if (user.getUsernames() == null || user.getUsernames().isEmpty()) {
             throw new BadRequest("At least one username must be provided.");
+        }
+        List<String> usernames = user.getUsernames().stream().map(username -> username.getUsername()).collect(Collectors.toList());
+        List<Username> byUsername = usernameRepository.findByUsernameIn(usernames);
+        if(byUsername != null && !byUsername.isEmpty()){
+            String names = byUsername.stream().map(t -> t.getUsername()).collect(Collectors.joining(","));
+            throw new DuplicateEntityFound(Username.class, names);
         }
 
         user.getUsernames().forEach(username -> username.setUser(user));

@@ -1,5 +1,7 @@
 package io.basswood.webauthn;
 
+import io.basswood.webauthn.secret.SecretManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -19,17 +21,17 @@ public class JPAConfiguration {
     private String url;
     @Value("${basswood.datasource.username}")
     private String username;
-    @Value("${basswood.datasource.password}")
-    private String password;
     @Value("${basswood.datasource.driver-class-name}")
     private String driverClassName;
+    @Autowired
+    private SecretManager secretManager;
 
     @Bean
     public DataSource dataSource() {
         return DataSourceBuilder.create()
                 .url(url)
                 .username(username)
-                .password(password)
+                .password(secretManager.getDatabasePassword())
                 .driverClassName(driverClassName)
                 .build();
     }

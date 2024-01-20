@@ -5,8 +5,11 @@ public enum ErrorCode {
     bad_request,
     not_found,
     duplicate_entity,
-
     token_validation_error,
+    keystore_error,
+
+    crypto_error,
+    jwk_error,
     // Spring MVC errors start
     http_request_method_not_supported,
     http_mediatype_not_supported,

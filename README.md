@@ -42,9 +42,6 @@ The services offered by the applications are all exposed via HTTP end points and
 The included postman artifacts ([basswood-webauthn.postman_collection.json](postman/basswood-webauthn.postman_collection.json) and [basswood-webauthn.postman_environment.json](postman/basswood-webauthn.postman_environment.json)) can be used to try out the APIs against the deployed application  
 The details of the APIs has been documented below under respective modules.
 
-# Security and Caveats
-The project does not require or any form security restriction on the APIs. All APIs are 
-
 # Module WebAuthn
 This Spring Boot web application is the reference implementation of the Java Yubico's [java-webauthn-server](https://developers.yubico.com/java-webauthn-server/).
 It follows the same step by step guideline as outlined in the Yubico's [Getting Started Guide](https://developers.yubico.com/java-webauthn-server/#:~:text=depth%20API%20documentation.-,Getting%20started,-Using%20this%20library)
@@ -66,6 +63,81 @@ A User may have one or more [Usernames](webauthn/src/main/java/io/basswood/webau
 ### [RegisteredCredentialEntity](webauthn/src/main/java/io/basswood/webauthn/model/credential/RegisteredCredentialEntity.java)
 This is the local implementation of Yubico's [RegisteredCredential](https://developers.yubico.com/java-webauthn-server/JavaDoc/webauthn-server-core/2.5.0/com/yubico/webauthn/RegisteredCredential.html).
 RegisteredCredentialEntity encapsulate the necessary cryptography data for a User and stores them in the database.
+
+
+## Security
+The APIs are secured using signed JWT token. The security is enforced using a simple filter: [JWTFilter.java](./webauthn/src/main/java/io/basswood/webauthn/security/JWTFilter.java)
+The filter checks for the presence of Authorization Bearer token header in every request and validates its signature and role claims beofre
+granting access to the requested API resource. For testing and development purposes the security can be disabled by setting the
+following property to true in [application.yaml](./webauthn/src/main/resources/application.yaml)<br/>
+```yaml
+basswood:
+   security:
+      jwt:
+        filter=true
+```
+or in [docker-compose.yml](./docker/docker-compose.yml)<br/>
+```yaml
+services:
+   webauthn:
+      environment:
+         BASSWOOD_SECURITY_JWT_FILTER_DISABLE=true
+```
+### Roles
+The JWT token must have necessary role claim(s) to access specific APIs. Following 4 roles are enforced in the app<br/>
+> | Role         | End point      | Description                               |
+> |--------------|----------------|-------------------------------------------|
+> | user-manager | /user          | Permission to manage User APIs            |
+> | rp-manager   | /relying-party | Permission to manage Relying Parties APIs |
+> | jwk-manager  | /jwk           | Permission to manage JWKs                 |
+> | jwt-manager  | /jwt           | Permission to create JWTs                 |
+
+### JWT Token
+A JWT token can be created using the POST /jwt token endpoint. See [JWTController.java](./webauthn/src/main/java/io/basswood/webauthn/rest/JWTController.java) An example token is presented below
+#### HEADER
+```json
+{
+   "kid": "c0bdf4fb-3f39-47c6-9eb2-86c148cfca1e",
+   "typ": "JWT",
+   "alg": "ES256"
+}
+```
+#### Payload
+```json
+{
+   "sub": "webauthn_admin",
+   "aud": "webauthn.basswood.io",
+   "nbf": 1706555618,
+   "roles": [
+      "user_manager",
+      "rp_manager",
+      "jwk_manager",
+      "token_manager"
+   ],
+   "iss": "webauthn.basswood.io",
+   "exp": 1924955999,
+   "iat": 1706555618,
+   "jti": "e5f7f642-5cb4-419d-9959-6d18fa7f4e0a"
+}
+```
+
+For test purposes a JWT token is bundles with the sourcecode [jwt-for-testing.txt](./webauthn/src/main/resources/secrets/jwt-for-testing.txt).
+The same is also used in the [Postman collection](./postman/basswood-webauthn.postman_collection.json). A new token with all required role claims can also be created during system startup.
+Setting the [application.yaml](./webauthn/src/main/resources/application.yaml) property ``basswood.security.jwt.print-new-token-on-startup`` to true.
+Or by setting the corresponding [docker-compose.yml](./docker/docker-compose.yml) property 
+```BASSWOOD_SECURITY_JWT_PRINTNEWTOKENONSTARTUP``` to true.
+
+### Secrets
+The webauthn application require 2 secrets - a database password and a Symmetric (AES) key for encryption. The secret key 
+is used to encrypt JWK key data in the database column. These 2 secrets must be included in a Java keystore file and made
+available in the running Spring Boot Application. This keystore file and a separate keystore configuration file(JSON)
+constitutes the secret infrastructure. See the bundles resources [basswood-not-for-production-keystore.p12](./webauthn/src/main/resources/secrets/basswood-not-for-production-keystore.p12)
+and [keystore-config.json](./webauthn/src/main/resources/secrets/keystore-config.json). Also see the
+[application.yaml](./webauthn/src/main/resources/application.yaml) properties ``basswood.security.keystore.keystore-file``
+and ``basswood.security.keystore.keystore-config-file``
+
+The bundled secrets files above only for local development and testing. To create new artifacts for secrets consult the
+[KeystoreUtil.java](./webauthn/src/main/java/io/basswood/webauthn/secret/KeystoreUtil.java)   
 
 
 ## Management (REST) APIs

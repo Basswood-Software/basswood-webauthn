@@ -121,7 +121,7 @@ A JWT token can be created using the POST /jwt token endpoint. See [JWTControlle
 }
 ```
 
-For test purposes a JWT token is bundles with the sourcecode [jwt-for-testing.txt](./webauthn/src/main/resources/secrets/jwt-for-testing.txt).
+For test purposes a JWT token is bundled with the source code [jwt-for-testing.txt](./webauthn/src/main/resources/secrets/jwt-for-testing.txt).
 The same is also used in the [Postman collection](./postman/basswood-webauthn.postman_collection.json). A new token with all required role claims can also be created during system startup.
 Setting the [application.yaml](./webauthn/src/main/resources/application.yaml) property ``basswood.security.jwt.print-new-token-on-startup`` to true.
 Or by setting the corresponding [docker-compose.yml](./docker/docker-compose.yml) property 
@@ -162,6 +162,12 @@ The bundled secrets files above only for local development and testing. To creat
     "origins":[ "localhost" ]
 }
 ```
+#### Request Header
+> | Header                 | Description                                 | 
+> |------------------------|---------------------------------------------|
+> | `Authorization Bearer` | `The JWT Bearer token with role rp-manager` |
+>
+
 ##### Responses
 
 > | http code | content-type                      | response                                        |
@@ -174,6 +180,7 @@ The bundled secrets files above only for local development and testing. To creat
 ```shell
 curl --location --request POST 'http://red.basswoodid.com:9080/relying-party' \
 --header 'Content-Type: application/json' \
+--header 'Authorization Bearer: eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQxMzA3LCJyb2xlcyI6WyJ1c2VyX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwiandrX21hbmFnZXIiLCJ0b2tlbl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxOTI0OTkxOTk5LCJpYXQiOjE3MDYyNDEzMDcsImp0aSI6IjcwZGQ0ZGY5LTA2MGMtNGFmZC1iMDg1LWU4NDAzODMzOWJhMSJ9.EuSLWJPAj-ST0MF-W6UB0rTyblHKOx9FLUd2C-AJ4Gt5sBoalvMaVAmFeh04Vo_0fkS7edkCPM5N49Cws_It8w' \
 --data-raw '{
 "id" : "red.basswoodid.com",
 "name": "Basswood Red Client",
@@ -197,6 +204,12 @@ curl --location --request POST 'http://red.basswoodid.com:9080/relying-party' \
 
 ##### Request Body
 None
+#### Request Header
+> | Header                 | Description                                 | 
+> |------------------------|---------------------------------------------|
+> | `Authorization Bearer` | `The JWT Bearer token with role rp-manager` |
+>
+
 #### Parameters
 
 > | name      |  type     | data type                 | description                                                         |
@@ -235,6 +248,12 @@ See [User](./webauthn/src/main/java/io/basswood/webauthn/model/user/User.java)
     ]
 }
 ```
+#### Request Header
+> | Header                 | Description                                   | 
+> |------------------------|-----------------------------------------------|
+> | `Authorization Bearer` | `The JWT Bearer token with role user-manager` |
+>
+
 ##### Responses
 > | http code | content-type                      | response                                   |
 > |-----------|-----------------------------------|--------------------------------------------|
@@ -245,6 +264,7 @@ See [User](./webauthn/src/main/java/io/basswood/webauthn/model/user/User.java)
 ```shell
 curl --location --request POST 'http://red.basswoodid.com:9080/user' \
 --header 'Content-Type: application/json' \
+--header 'Authorization Bearer: eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQxMzA3LCJyb2xlcyI6WyJ1c2VyX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwiandrX21hbmFnZXIiLCJ0b2tlbl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxOTI0OTkxOTk5LCJpYXQiOjE3MDYyNDEzMDcsImp0aSI6IjcwZGQ0ZGY5LTA2MGMtNGFmZC1iMDg1LWU4NDAzODMzOWJhMSJ9.EuSLWJPAj-ST0MF-W6UB0rTyblHKOx9FLUd2C-AJ4Gt5sBoalvMaVAmFeh04Vo_0fkS7edkCPM5N49Cws_It8w' \
 --data-raw '{
     "userHandle" : "caebd925-6fa8-447a-8b14-56705619a2c9",
     "displayName": "Homer Simpson",
@@ -265,6 +285,11 @@ curl --location --request POST 'http://red.basswoodid.com:9080/user' \
 
 ##### Request Body
 None
+#### Request Header
+> | Header                 | Description                                   | 
+> |------------------------|-----------------------------------------------|
+> | `Authorization Bearer` | `The JWT Bearer token with role user-manager` |
+>
 
 ##### Responses
 
@@ -275,7 +300,166 @@ None
 >
 ##### Example cURL
 ```shell
-curl --location --request GET 'http://red.basswoodid.com:9080/user/caebd9256fa8447a8b1456705619a2c9'
+curl --location \ 
+--header 'Authorization Bearer: eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQxMzA3LCJyb2xlcyI6WyJ1c2VyX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwiandrX21hbmFnZXIiLCJ0b2tlbl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxOTI0OTkxOTk5LCJpYXQiOjE3MDYyNDEzMDcsImp0aSI6IjcwZGQ0ZGY5LTA2MGMtNGFmZC1iMDg1LWU4NDAzODMzOWJhMSJ9.EuSLWJPAj-ST0MF-W6UB0rTyblHKOx9FLUd2C-AJ4Gt5sBoalvMaVAmFeh04Vo_0fkS7edkCPM5N49Cws_It8w' \
+--request GET 'http://red.basswoodid.com:9080/user/caebd9256fa8447a8b1456705619a2c9'
+```
+</details>
+------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+#### Create JWK
+<details>
+<summary><code>POST /jwk</code><code>(Create a new JSON Web Key)</code></summary>
+
+##### Request Body (Optional)
+See [JWKCreateDTO](./webauthn/src/main/java/io/basswood/webauthn/dto/JWKCreateDTO.java)
+```json
+{
+  "keyTypeEnum" : "RSA",
+  "keyUseEnum" : "SIGNATURE",
+  "keyLengthEnum" : "KEY_LENGTH_3072"
+}
+```
+> | Filed           | Default           | Accepted Values                                     | Description                      | 
+> |-----------------|-------------------|-----------------------------------------------------|----------------------------------|
+> | `keyTypeEnum`   | `EC`              | `EC, RSA`                                           | `Spported keytype is EC and RSA` |
+> | `keyUseEnum`    | `SIGNATURE`       | `SIGNATURE, ENCRYPTION`                             | `The purpose of the key`         |
+> | `keyLengthEnum` | `KEY_LENGTH_2048` | `KEY_LENGTH_2048, KEY_LENGTH_3072, KEY_LENGTH_4096` | `Key length for RSA key`         |
+> | `curveEnum`     | `P_256`           | `P_256, P_384, P_521`                               | `Curve for the EC key`           |
+>
+
+#### Request Header
+> | Header                 | Description                                  | 
+> |------------------------|----------------------------------------------|
+> | `Authorization Bearer` | `The JWT Bearer token with role jwk-manager` |
+>
+#### Request Parameter
+> | Parameter             | Default | Description                                          | 
+> |-----------------------|---------|------------------------------------------------------|
+> | `returnPublicKeyOnly` | true    | `Returns only the public portion of the JWK if true` |
+>
+
+##### Responses
+
+> | http code | content-type            | response                                   |
+> |-----------|-------------------------|--------------------------------------------|
+> | `200`     | `application/json`      | `Returns the JWK key being created`        |
+>
+##### Example cURL
+```shell
+curl --location --request POST 'http://red.basswoodid.com:9080/jwk' \
+--header 'Authorization: Bearer eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQwNzA4LCJyb2xlcyI6WyJqd2tfbWFuYWdlciIsInRva2VuX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwidXNlcl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxODYzOTIwNzA4LCJpYXQiOjE3MDYyNDA3MDgsImp0aSI6ImE3NWJjNTY2LWEzYTYtNGZkNC1iZDA1LTdkMmMxMjQ5Zjc3MiJ9.Aymr4xRCRniwEwnntEZ5nnauyblbFk69BnR5ZzO89J4UKgV4rQLqZN8RT1Qo0LG5AxQ6ZMWeTLOPvtAWl5N4bQ' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "keyTypeEnum" : "RSA",
+    "keyUseEnum" : "SIGNATURE",
+    "keyLengthEnum" : "KEY_LENGTH_3072"
+}'
+```
+</details>
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+#### Get JWK
+<details>
+<summary><code>GET /jwk</code><code>(Create a new JSON Web Key)</code></summary>
+
+##### Request Body (Optional)
+None
+#### Request Header
+> | Header                 | Description                                  | 
+> |------------------------|----------------------------------------------|
+> | `Authorization Bearer` | `The JWT Bearer token with role jwk-manager` |
+>
+#### Request Parameter
+> | Parameter             | Default | Description                                          | 
+> |-----------------------|---------|------------------------------------------------------|
+> | `returnPublicKeyOnly` | true    | `Returns only the public portion of the JWK if true` |
+>
+
+##### Responses
+> | http code | content-type            | response                                   |
+> |-----------|-------------------------|--------------------------------------------|
+> | `200`     | `application/json`      | `Returns the JWK key being created`        |
+>
+```json
+{
+    "kty": "EC",
+    "use": "sig",
+    "crv": "P-256",
+    "kid": "c0bdf4fb-3f39-47c6-9eb2-86c148cfca1e",
+    "x": "hRXf0SqOfN2-V9H_Mo3p8H9oZEwDgUC2sc1eJAdxwao",
+    "y": "VUmI3stpJONeqe_glA6vqS_uk1Y3ZBnd-6bOl9LvaRM",
+    "exp": 1708814687,
+    "iat": 1706222687
+}
+```
+
+##### Example cURL
+```shell
+curl --location --request GET 'http://red.basswoodid.com:9080/jwk/c0bdf4fb-3f39-47c6-9eb2-86c148cfca1e?returnPublicKeyOnly=true' \
+--header 'Authorization: Bearer eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQwNzA4LCJyb2xlcyI6WyJqd2tfbWFuYWdlciIsInRva2VuX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwidXNlcl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxODYzOTIwNzA4LCJpYXQiOjE3MDYyNDA3MDgsImp0aSI6ImE3NWJjNTY2LWEzYTYtNGZkNC1iZDA1LTdkMmMxMjQ5Zjc3MiJ9.Aymr4xRCRniwEwnntEZ5nnauyblbFk69BnR5ZzO89J4UKgV4rQLqZN8RT1Qo0LG5AxQ6ZMWeTLOPvtAWl5N4bQ'
+```
+</details>
+------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+#### Create JWT
+<details>
+<summary><code>POST /jwt</code><code>(Create a new JSON Web Token)</code></summary>
+
+##### Request Body
+See [Token](./webauthn/src/main/java/io/basswood/webauthn/model/token/Token.java)
+```json
+{
+  "subject" : "webauthn_admin",
+  "issuer" : "webauthn.basswood.io",
+  "audience" : "webauthn.basswood.io",
+  "jti" : "61025c0b-bd76-4a5f-9557-a6ffc06d1440",
+  "expirationTime" : "2030-12-31T13:59:59",
+  "claimSet" : {
+    "roles" : ["user_manager", "rp_manager", "jwk_manager", "token_manager"]
+  }
+}
+```
+> | Filed            | Default                         | Accepted Values | Description                                           | 
+> |------------------|---------------------------------|-----------------|-------------------------------------------------------|
+> | `subject`        | `webauthn_admin`                | `N/A`           | `The subjet/user's identifierA`                       |
+> | `issuer`         | `webauthn.basswood.io`          | `N/A`           | `The issuing agent or server`                         |
+> | `audience`       | `webauthn.basswood.io`          | `N/A`           | `The party for whom the JWT is being issued`          |
+> | `jti`            | `random UUID`                   | `N/A`           | `The unique id of the JWT`                            |
+> | `issueTime`      | `Current time`                  | `Any date`      | `The time of issuence`                                |
+> | `notBeforeTime`  | `Current time`                  | `Any date`      | `Time when the JWT becomes effective, but not before` |
+> | `expirationTime` | `300 secnds after current time` | `Any date`      | `Time after which the JWT is not valid anylonger`     |
+> | `claimSet`       | `none`                          | `Map of claims` | `A map of claims. For example roles.`                 |
+>
+
+#### Request Header
+> | Header                 | Description                                  | 
+> |------------------------|----------------------------------------------|
+> | `Authorization Bearer` | `The JWT Bearer token with role jwt-manager` |
+>
+
+##### Responses
+
+> | http code | content-type            | response                            |
+> |-----------|-------------------------|-------------------------------------|
+> | `200`     | `application/json`      | `Returns the JWT being created` |
+>
+##### Example cURL
+```shell
+curl --location --request POST 'http://red.basswoodid.com:9080/jwt' \
+--header 'Authorization: Bearer eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQwNzA4LCJyb2xlcyI6WyJqd2tfbWFuYWdlciIsInRva2VuX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwidXNlcl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxODYzOTIwNzA4LCJpYXQiOjE3MDYyNDA3MDgsImp0aSI6ImE3NWJjNTY2LWEzYTYtNGZkNC1iZDA1LTdkMmMxMjQ5Zjc3MiJ9.Aymr4xRCRniwEwnntEZ5nnauyblbFk69BnR5ZzO89J4UKgV4rQLqZN8RT1Qo0LG5AxQ6ZMWeTLOPvtAWl5N4bQ' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "subject" : "webauthn_admin",
+    "issuer" : "webauthn.basswood.io",
+    "audience" : "webauthn.basswood.io",
+    "jti" : "9038f192-3e09-4bab-8abf-27d28f8317a5",
+    "expirationTime" : "2030-12-31T13:59:59",
+    "claimSet" : {
+        "roles" : ["user_manager", "rp_manager", "jwk_manager", "token_manager"]
+    }
+}'
 ```
 </details>
 ------------------------------------------------------------------------------------------
@@ -972,9 +1156,6 @@ curl --location --request POST 'http://red.basswoodid.com:9090/device/credential
 ```
 </details>
 ------------------------------------------------------------------------------------------
-
-# License
-[//]: # (TODO)
 
 # References
 1. [Yubico's java-webauthn-server](https://developers.yubico.com/java-webauthn-server/) and at [GitHub](https://github.com/Yubico/java-webauthn-server)

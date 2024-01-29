@@ -1,74 +1,63 @@
+------------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------------
-#### Get Credential  
+#### Create JWT
 <details>
-<summary><code>POST /device/credential/get</code><code>(Create credential - Registration)</code></summary>
+<summary><code>POST /jwt</code><code>(Create a new JSON Web Token)</code></summary>
 
-**Request Parameters** <br/>
-
-> | Parameter   | required | Description                       |
-> |-------------|----------|-----------------------------------|
-> | deviceId    | yes      | `The ID of the device`            |
-> | aaguid      | yes      | `The aaguid of the authenticator` |
->
-
-**Request Body** <br/>
-See [PublicKeyCredentialRequestOptions](https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#dictdef-publickeycredentialrequestoptions)
+##### Request Body
+See [Token](./webauthn/src/main/java/io/basswood/webauthn/model/token/Token.java)
 ```json
 {
-  "challenge": "A8lvQzwPtDdb4scVnNLGdd9belsmKF4Q9pVTFjbPNQg",
-  "timeout": 60000,
-  "rpId": "red.basswoodid.com:9080",
-  "allowCredentials": [
-    {
-      "type": "public-key",
-      "id": "6daa40a5-84a0-4c19-838d-18511a7279c9cmVkLmJhc3N3b29kaWQuY29tOjkwODA",
-      "transports": [
-        "internal"
-      ]
-    }
-  ],
-  "userVerification": "discouraged",
-  "extensions": {
-    "appid": null,
-    "largeBlob": null,
-    "uvm": null
+  "subject" : "webauthn_admin",
+  "issuer" : "webauthn.basswood.io",
+  "audience" : "webauthn.basswood.io",
+  "jti" : "61025c0b-bd76-4a5f-9557-a6ffc06d1440",
+  "expirationTime" : "2030-12-31T13:59:59",
+  "claimSet" : {
+    "roles" : ["user_manager", "rp_manager", "jwk_manager", "token_manager"]
   }
 }
 ```
+> | Filed            | Default                         | Accepted Values | Description                                           | 
+> |------------------|---------------------------------|-----------------|-------------------------------------------------------|
+> | `subject`        | `webauthn_admin`                | `N/A`           | `The subjet/user's identifierA`                       |
+> | `issuer`         | `webauthn.basswood.io`          | `N/A`           | `The issuing agent or server`                         |
+> | `audience`       | `webauthn.basswood.io`          | `N/A`           | `The party for whom the JWT is being issued`          |
+> | `jti`            | `random UUID`                   | `N/A`           | `The unique id of the JWT`                            |
+> | `issueTime`      | `Current time`                  | `Any date`      | `The time of issuence`                                |
+> | `notBeforeTime`  | `Current time`                  | `Any date`      | `Time when the JWT becomes effective, but not before` |
+> | `expirationTime` | `300 secnds after current time` | `Any date`      | `Time after which the JWT is not valid anylonger`     |
+> | `claimSet`       | `none`                          | `Map of claims` | `A map of claims. For example roles.`                 |
+>
 
-**Response Body** <br/>
-See [AuthenticatorAssertionResponse](https://www.w3.org/TR/2021/REC-webauthn-2-20210408/#iface-authenticatorassertionresponse)
-```json
-{
-  "id": "6daa40a5-84a0-4c19-838d-18511a7279c9cmVkLmJhc3N3b29kaWQuY29tOjkwODA",
-  "response": {
-    "authenticatorData": "4mO4a-qXlHNmAiDhS1chFBhZWEbSd4AB8yM20C-OtrtFAAAAAoWcXUQRxUYzsCjl3IhhDe8AMunWmuNGufvOGtPuHNffvN_HftfOddWu9u_XPXJlZC5iYXNzd29vZGlkLmNvbTo5MDgwpQECAyYgASFYINGqDafAI2upz-CF5T7fgedC10UkG9WCiPtYsE2YgTDTIlgge0gn2rYLyXjaAmEVbqareTjnQ2X6aEMCTMe93qzrBEU",
-    "clientDataJSON": "eyJjaGFsbGVuZ2UiOiJBOGx2UXp3UHREZGI0c2NWbk5MR2RkOWJlbHNtS0Y0UTlwVlRGamJQTlFnIiwib3JpZ2luIjoicmVkLmJhc3N3b29kaWQuY29tOjkwODAiLCJ0eXBlIjoid2ViYXV0aG4uZ2V0In0",
-    "signature": "MEYCIQDE-A0cowrMq6x3FwqUcPLE7eP0cQkCeYvubOitueQlWQIhAK5dJNdbkfN7Y0htsBrwVUvPD7Koa3dpC6XMgp2QO5ap",
-    "userHandle": "6daa40a5-84a0-4c19-838d-18511a7279c9"
-  },
-  "authenticatorAttachment": null,
-  "clientExtensionResults": {
-    "appid": null,
-    "largeBlob": null
-  },
-  "type": "public-key"
-}
-```
+#### Request Header
+> | Header                 | Description                                  | 
+> |------------------------|----------------------------------------------|
+> | `Authorization Bearer` | `The JWT Bearer token with role jwt-manager` |
+>
 
-**Status Codes**<br/>
+##### Responses
 
-> | http code | content-type            | response  |
-> |-----------|-------------------------|-----------|
-> | `200`     | `application/json`      | `None`    |
+> | http code | content-type            | response                            |
+> |-----------|-------------------------|-------------------------------------|
+> | `200`     | `application/json`      | `Returns the JWT being created` |
 >
 ##### Example cURL
 ```shell
-curl --location --request POST 'http://red.basswoodid.com:9090/device/credential/get?deviceId=f5923c1a-3e4e-42df-b1fb-5bfdcff13e50&aaguid=859c5d44-11c5-4633-b028-e5dc88610def' \
---header 'X-Forwarded-Host: red.basswoodid.com:9080' \
+curl --location --request POST 'http://red.basswoodid.com:9080/jwt' \
+--header 'Authorization: Bearer eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQwNzA4LCJyb2xlcyI6WyJqd2tfbWFuYWdlciIsInRva2VuX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwidXNlcl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxODYzOTIwNzA4LCJpYXQiOjE3MDYyNDA3MDgsImp0aSI6ImE3NWJjNTY2LWEzYTYtNGZkNC1iZDA1LTdkMmMxMjQ5Zjc3MiJ9.Aymr4xRCRniwEwnntEZ5nnauyblbFk69BnR5ZzO89J4UKgV4rQLqZN8RT1Qo0LG5AxQ6ZMWeTLOPvtAWl5N4bQ' \
 --header 'Content-Type: application/json' \
---data-raw '{"challenge":"A8lvQzwPtDdb4scVnNLGdd9belsmKF4Q9pVTFjbPNQg","timeout":60000,"rpId":"red.basswoodid.com:9080","allowCredentials":[{"type":"public-key","id":"6daa40a5-84a0-4c19-838d-18511a7279c9cmVkLmJhc3N3b29kaWQuY29tOjkwODA","transports":["internal"]}],"userVerification":"discouraged","extensions":{"appid":null,"largeBlob":null,"uvm":null}}'
+--data-raw '{
+    "subject" : "webauthn_admin",
+    "issuer" : "webauthn.basswood.io",
+    "audience" : "webauthn.basswood.io",
+    "jti" : "9038f192-3e09-4bab-8abf-27d28f8317a5",
+    "expirationTime" : "2030-12-31T13:59:59",
+    "claimSet" : {
+        "roles" : ["user_manager", "rp_manager", "jwk_manager", "token_manager"]
+    }
+}'
 ```
 </details>
 ------------------------------------------------------------------------------------------

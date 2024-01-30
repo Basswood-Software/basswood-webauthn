@@ -110,13 +110,18 @@ public class JWKService {
     }
 
     public Optional<JWKEntity> getJWKEntity(String kid) {
-        try {
-            JWKEntity jwkEntity = keyCache.getIfPresent(kid);
-            return Optional.ofNullable(jwkEntity);
-        } catch (EntityNotFound e) {
-            return Optional.empty();
+        // check cache first
+        JWKEntity jwkEntity = keyCache.getIfPresent(kid);
+        if(jwkEntity != null){
+            return Optional.of(jwkEntity);
         }
-    }
+        // Check database now.
+        Optional<JWKEntity> optional = jwkRepository.findDistinctByKid(kid);
+        if(optional.isPresent()){ // update cache
+            keyCache.put(kid, optional.get());
+            return optional;
+        }
+        return optional;    }
 
     public JWKSet jwks() {
         List<JWKEntity> keys = jwkRepository.findAll();

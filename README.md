@@ -12,7 +12,7 @@ Spring Boot this could be a good starting point. But clear understanding of FIDO
 - [Module WebAuthn](#module-webauthn)
 - [Module MySQL](#module-mysql)
 - [Module Authenticator](#module-authenticator)
-- [Licence](#license)
+- [Postman Collection](#postman-collection)
 - [References](#references)
 
 # Quickstart
@@ -1156,6 +1156,55 @@ curl --location --request POST 'http://red.basswoodid.com:9090/device/credential
 ```
 </details>
 ------------------------------------------------------------------------------------------
+
+# Postman Collection
+Example usage of most APIs offered in this project can be found in the [postman collection](./postman/basswood-webauthn.postman_collection.json).
+Each folder in the postman collection has attached documentation clarifying the usage and purpose.
+
+## Environment Details
+The collection means to be run with the included
+Environment file ([basswood-webauthn.postman_environment.json](./postman/basswood-webauthn.postman_environment.json)).
+```json
+{
+	"id": "4761c322-f30f-45f2-8f88-348a678d107c",
+	"name": "basswood-webauthn",
+	"values": [
+		{
+			"key": "basswood-webauthn-url-red",
+			"value": "http://red.basswoodid.com:9080",
+			"enabled": true
+		},
+		{
+			"key": "basswood-authenticator-url",
+			"value": "http://red.basswoodid.com:9090",
+			"enabled": true
+		},
+		{
+			"key": "origin",
+			"value": "red.basswoodid.com:9080",
+			"enabled": true
+		},
+		{
+			"key": "jwt",
+			"value": "eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQxMzA3LCJyb2xlcyI6WyJ1c2VyX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwiandrX21hbmFnZXIiLCJ0b2tlbl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxOTI0OTkxOTk5LCJpYXQiOjE3MDYyNDEzMDcsImp0aSI6IjcwZGQ0ZGY5LTA2MGMtNGFmZC1iMDg1LWU4NDAzODMzOWJhMSJ9.EuSLWJPAj-ST0MF-W6UB0rTyblHKOx9FLUd2C-AJ4Gt5sBoalvMaVAmFeh04Vo_0fkS7edkCPM5N49Cws_It8w",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2024-01-30T22:22:40.578Z",
+	"_postman_exported_using": "Postman/9.6.1"
+}
+```
+
+The environment properties, specially the urls needs to be updated accordingly.
+
+> | Variable | Description                                                                                            |
+> |----------|--------------------------------------------------------------------------------------------------------|
+> |basswood-webauthn-url-red| The URL of the WebAuthn server                                                                         |
+> |basswood-authenticator-url| The URL of the virtual autheticator server                                                             |
+> |origin| The Relying Party origin url. Usually the domain of the Client Application that need WebAuthn services |
+> |jwt| A valid JWT token. Fro example see [jwt-for-testing.txt](./webauthn/src/main/resources/secrets/jwt-for-testing.txt) |
+>
 
 # References
 1. [Yubico's java-webauthn-server](https://developers.yubico.com/java-webauthn-server/) and at [GitHub](https://github.com/Yubico/java-webauthn-server)

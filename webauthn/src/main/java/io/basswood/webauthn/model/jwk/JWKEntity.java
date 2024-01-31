@@ -30,7 +30,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class JWKEntity {
-    public static final Long ONE_WEEK_IN_MILLIS = 30 * 24 * 3600 * 1000L;
+    public static final Long ONE_MONTH_IN_MILLIS = 30 * 24 * 3600 * 1000L;
     @Id
     @Column(name = "kid")
     private String kid;
@@ -47,7 +47,7 @@ public class JWKEntity {
     @Column(name = "expiryTime")
     @Temporal(TemporalType.TIMESTAMP)
     @Builder.Default
-    private Date expiryTime = new Date(System.currentTimeMillis() + ONE_WEEK_IN_MILLIS);
+    private Date expiryTime = new Date(System.currentTimeMillis() + ONE_MONTH_IN_MILLIS);
     @Column(name = "jwkData")
     @Convert(converter = AttributeEncryptionConverter.class)
     private String jwkData;

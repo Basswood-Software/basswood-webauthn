@@ -30,7 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static io.basswood.webauthn.model.jwk.JWKEntity.ONE_WEEK_IN_MILLIS;
+import static io.basswood.webauthn.model.jwk.JWKEntity.ONE_MONTH_IN_MILLIS;
 
 /**
  * @author shamualr
@@ -40,6 +40,8 @@ public class JWKService {
     private JWKRepository jwkRepository;
     private JWKEntityConverter converter;
     private LoadingCache<String, JWKEntity> keyCache;
+    private JWK latestSignatureKey;
+    private JWK latestEncryptionKey;
 
     public JWKService(JWKRepository jwkRepository) {
         this.jwkRepository = jwkRepository;
@@ -89,7 +91,7 @@ public class JWKService {
                     .keyID(UUID.randomUUID().toString())
                     .keyUse(converter.toKeyUse(keyUseEnum))
                     .issueTime(new Date())
-                    .expirationTime(new Date(System.currentTimeMillis() + ONE_WEEK_IN_MILLIS))
+                    .expirationTime(new Date(System.currentTimeMillis() + ONE_MONTH_IN_MILLIS))
                     .generate();
         } catch (JOSEException e) {
             throw new JWKException("Failed to create RSA Key", e);
@@ -102,7 +104,7 @@ public class JWKService {
                     .keyID(UUID.randomUUID().toString())
                     .keyUse(converter.toKeyUse(keyUseEnum))
                     .issueTime(new Date())
-                    .expirationTime(new Date(System.currentTimeMillis() + ONE_WEEK_IN_MILLIS))
+                    .expirationTime(new Date(System.currentTimeMillis() + ONE_MONTH_IN_MILLIS))
                     .generate();
         } catch (JOSEException e) {
             throw new JWKException("Failed to create RSA Key", e);
@@ -131,6 +133,48 @@ public class JWKService {
         return new JWKSet(jwks);
     }
 
+    /**
+     * Returns the latest key for signature. If none found or expired then creates a new one and returns. It updates the
+     * keyCache accordingly if needed.
+     * @return
+     */
+    public JWK latestSignatureKey() {
+        if(latestSignatureKey != null && latestSignatureKey.getExpirationTime().after(new Date())){
+            return latestSignatureKey;
+        }
+        latestSignatureKey = null; // no key or the key is expired.
+        Optional<JWKEntity> optionalJWK = jwkRepository.findFirstByKeyUseAndExpiryTimeAfterOrderByExpiryTimeDesc(KeyUseEnum.SIGNATURE, new Date());
+        if(optionalJWK.isPresent()){
+            latestSignatureKey = converter.toJWK(optionalJWK.get());
+            keyCache.put(optionalJWK.get().getKid(), optionalJWK.get());
+            return latestSignatureKey;
+        }
+        // none found. So create a new one
+        return latestSignatureKey = createKey(JWKCreateDTO.builder().build());
+    }
+
+    /**
+     * Returns the latest key for encryption. If none found or expired then creates a new one and returns. It updates the
+     * keyCache accordingly if needed
+     * @return
+     */
+    public JWK latestEncryptionKey() {
+        if(latestEncryptionKey != null && latestEncryptionKey.getExpirationTime().after(new Date())){
+            return latestEncryptionKey;
+        }
+        latestEncryptionKey = null; // no key or the key is expired.
+        Optional<JWKEntity> optionalJWK = jwkRepository.findFirstByKeyUseAndExpiryTimeAfterOrderByExpiryTimeDesc(KeyUseEnum.ENCRYPTION, new Date());
+        if(optionalJWK.isPresent()){
+            latestEncryptionKey = converter.toJWK(optionalJWK.get());
+            keyCache.put(optionalJWK.get().getKid(), optionalJWK.get());
+            return latestEncryptionKey;
+        }
+        // none found. So create a new one
+        return latestEncryptionKey = createKey(JWKCreateDTO.builder()
+                .keyUseEnum(KeyUseEnum.ENCRYPTION)
+                .build());
+    }
+
     public void removeKey(String kid){
         Optional<JWKEntity> optional = jwkRepository.findDistinctByKid(kid);
         if(optional.isEmpty()){
@@ -138,6 +182,12 @@ public class JWKService {
         }
         jwkRepository.delete(optional.get());
         keyCache.invalidate(kid);
+        if(latestEncryptionKey!=null && kid.equals(latestEncryptionKey.getKeyID())){
+            latestSignatureKey = null;
+        }
+        if(latestSignatureKey!=null && kid.equals(latestSignatureKey.getKeyID())){
+            latestSignatureKey = null;
+        }
     }
 
     public JWK parse(String jwk){

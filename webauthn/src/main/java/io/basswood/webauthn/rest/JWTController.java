@@ -1,11 +1,8 @@
 package io.basswood.webauthn.rest;
 
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jwt.SignedJWT;
 import io.basswood.webauthn.SecurityConfigurationProperties;
-import io.basswood.webauthn.exception.RootException;
 import io.basswood.webauthn.model.token.Token;
 import io.basswood.webauthn.service.JWKService;
 import io.basswood.webauthn.service.TokenGenerator;
@@ -16,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -33,15 +29,9 @@ public class JWTController {
 
     @PostMapping(value = "/jwt", produces = MediaType.TEXT_PLAIN_VALUE)
     public String createJWT(@RequestBody Token token) {
-        JWKSet jwks = jwkService.jwks();
-        Optional<JWK> optionalJWK = jwks.getKeys().stream()
-                .filter(key -> key.getKeyUse() == KeyUse.SIGNATURE)
-                .findAny();
-        if (optionalJWK.isEmpty()) {
-            throw new RootException("No signature keys found in repository.");
-        }
         Token tk = setupTokenWithDefaults(token);
-        SignedJWT signedJWT = tokenGenerator.createSignedJWT(optionalJWK.get(), tk);
+        JWK jwk = jwkService.latestSignatureKey();
+        SignedJWT signedJWT = tokenGenerator.createSignedJWT(jwk, tk);
         return signedJWT.serialize();
     }
 

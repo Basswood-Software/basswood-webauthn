@@ -128,6 +128,27 @@ Setting the [application.yaml](./webauthn/src/main/resources/application.yaml) p
 Or by setting the corresponding [docker-compose.yml](./docker/docker-compose.yml) property 
 ```BASSWOOD_SECURITY_JWT_PRINTNEWTOKENONSTARTUP``` to true.
 
+### JSON Web Keys - JWK
+The security tokens issued by the WebAuthn server is signed by JWK. The application thus provides a simple Public Key
+Infrastructure (PKI) to manage JWKs. The [POST /jwk](#create-jwk) API can be used to create new Keys, and it is stored in the 
+database
+```text
+CREATE TABLE `webauthn_jwk` (
+  `kid` varchar(128) NOT NULL PRIMARY KEY,
+  `kty` varchar(16) NOT NULL,
+  `keyUse` varchar(16) NOT NULL,
+  `createdTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `expiryTime` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP + INTERVAL 30 DAY),
+  `jwkData` text(2048) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+```
+The application creates a new JWK key on startup if none exists in the database ([WebauthnApplicationListener.java](./webauthn/src/main/java/io/basswood/webauthn/WebauthnApplicationListener.java)).
+Alternately a default one can be loaded from the classpath resource at [jwk-for-testing.json](./webauthn/src/main/resources/secrets/jwk-for-testing.json)
+by setting the configuration property ``basswood.security.keystore.load-jwk-file-on-startup`` to true.
+
+While issuing a new JWT token the server ([JWKService.latestSignatureKey()](./webauthn/src/main/java/io/basswood/webauthn/service/JWKService.java))
+uses the latest unexpired JWK key from the database. If none found one is created and stored in the database.   
+
 ### Secrets
 The webauthn application require 2 secrets - a database password and a Symmetric (AES) key for encryption. The secret key 
 is used to encrypt JWK key data in the database column. These 2 secrets must be included in a Java keystore file and made
@@ -336,12 +357,12 @@ See [JWKCreateDTO](./webauthn/src/main/java/io/basswood/webauthn/dto/JWKCreateDT
   "length" : "KEY_LENGTH_3072"
 }
 ```
-> | Filed           | Default           | Accepted Values                                     | Description                      | 
-> |-----------------|-------------------|-----------------------------------------------------|----------------------------------|
-> | `kty`   | `EC`              | `EC, RSA`                                           | `Spported keytype is EC and RSA` |
+> | Filed    | Default           | Accepted Values                                     | Description                      | 
+> |----------|-------------------|-----------------------------------------------------|----------------------------------|
+> | `kty`    | `EC`              | `EC, RSA`                                           | `Spported keytype is EC and RSA` |
 > | `use`    | `SIGNATURE`       | `SIGNATURE, ENCRYPTION`                             | `The purpose of the key`         |
 > | `length` | `KEY_LENGTH_2048` | `KEY_LENGTH_2048, KEY_LENGTH_3072, KEY_LENGTH_4096` | `Key length for RSA key`         |
-> | `curve`     | `P_256`           | `P_256, P_384, P_521`                               | `Curve for the EC key`           |
+> | `curve`  | `P_256`           | `P_256, P_384, P_521`                               | `Curve for the EC key`           |
 >
 
 #### Request Header
@@ -457,9 +478,9 @@ See [Token](./webauthn/src/main/java/io/basswood/webauthn/model/token/Token.java
 
 ##### Responses
 
-> | http code | content-type            | response                            |
-> |-----------|-------------------------|-------------------------------------|
-> | `200`     | `application/json`      | `Returns the JWT being created` |
+> | http code | content-type       | response                        |
+> |-----------|--------------------|---------------------------------|
+> | `200`     | `application/json` | `Returns the JWT being created` |
 >
 ##### Example cURL
 ```shell
@@ -580,9 +601,9 @@ See [PublicKeyCredentialCreationOptions](https://www.w3.org/TR/2021/REC-webauthn
 
 **Status Codes**
 
-> | http code | content-type            | response                                   |
-> |-----------|-------------------------|--------------------------------------------|
-> | `200`     | `application/json`      | `Retrieves PublicKeyCredentialCreationOptions`      |
+> | http code | content-type       | response                                       |
+> |-----------|--------------------|------------------------------------------------|
+> | `200`     | `application/json` | `Retrieves PublicKeyCredentialCreationOptions` |
 >
 ##### Example cURL
 ```shell
@@ -659,7 +680,7 @@ curl --location --request POST 'http://red.basswoodid.com:9080/webauthn/registra
 
 ## WebAuthn APIs - Assertion
 Assertion is the process where an end user request authetication using FIDO2 compliant autheticator. User must have to
-register valid credential, before attempting to login using the credential. <br/>
+register valid credential, before attempting to log in using the credential. <br/>
 
 **Assertion Sequence** <br/>
 ![Assertion Sequence](./artifacts/images/assertion-sequence.png) <br/>
@@ -1214,12 +1235,12 @@ Environment file ([basswood-webauthn.postman_environment.json](./postman/basswoo
 
 The environment properties, specially the urls needs to be updated accordingly.
 
-> | Variable | Description                                                                                            |
-> |----------|--------------------------------------------------------------------------------------------------------|
-> |basswood-webauthn-url-red| The URL of the WebAuthn server                                                                         |
-> |basswood-authenticator-url| The URL of the virtual autheticator server                                                             |
-> |origin| The Relying Party origin url. Usually the domain of the Client Application that need WebAuthn services |
-> |jwt| A valid JWT token. Fro example see [jwt-for-testing.txt](./webauthn/src/main/resources/secrets/jwt-for-testing.txt) |
+> | Variable                   | Description                                                                                                         |
+> |----------------------------|---------------------------------------------------------------------------------------------------------------------|
+> | basswood-webauthn-url-red  | The URL of the WebAuthn server                                                                                      |
+> | basswood-authenticator-url | The URL of the virtual autheticator server                                                                          |
+> | origin                     | The Relying Party origin url. Usually the domain of the Client Application that need WebAuthn services              |
+> | jwt                        | A valid JWT token. Fro example see [jwt-for-testing.txt](./webauthn/src/main/resources/secrets/jwt-for-testing.txt) |
 >
 
 # References

@@ -39,8 +39,9 @@ The [docker/docker-deploy.sh](docker/docker-deploy.sh) script accomplishes the f
 
 ## Test Drive - Postman
 The services offered by the applications are all exposed via HTTP end points and REST APIs.
-The included postman artifacts ([basswood-webauthn.postman_collection.json](postman/basswood-webauthn.postman_collection.json) and [basswood-webauthn.postman_environment.json](postman/basswood-webauthn.postman_environment.json)) can be used to try out the APIs against the deployed application  
-The details of the APIs has been documented below under respective modules.
+The included postman artifacts ([basswood-webauthn.postman_collection.json](postman/basswood-webauthn.postman_collection.json) and [basswood-webauthn.postman_environment.json](postman/basswood-webauthn.postman_environment.json))
+can be used to try out the APIs against the deployed application. See the section on [Postman](#postman-collection) for
+details on using the Postman Collection.
 
 # Module WebAuthn
 This Spring Boot web application is the reference implementation of the Java Yubico's [java-webauthn-server](https://developers.yubico.com/java-webauthn-server/).
@@ -139,6 +140,21 @@ and ``basswood.security.keystore.keystore-config-file``
 The bundled secrets files above only for local development and testing. To create new artifacts for secrets consult the
 [KeystoreUtil.java](./webauthn/src/main/java/io/basswood/webauthn/secret/KeystoreUtil.java)   
 
+### Security Configurations
+> | Property ([application.yaml](./webauthn/src/main/resources/application.yaml)) | Environment Property ([docker-compose.yml](./docker/docker-compose.yml)) | default value                                               | Description                                                                                                                                                     |
+> |-------------------------------------------------------------------------------|--------------------------------------------------------------------------|-------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+> | basswood.security.keystore.keystore-file                                      | BASSWOOD_SECURITY_KEYSTORE_KEYSTOREFILE                                  | classpath:/secrets/basswood-not-for-production-keystore.p12 | Location of the keystore file. Default is set to a classpath resource, but in production must be set to an actual file:///.. path                               |
+> | basswood.security.keystore.keystore-config-file                               | BASSWOOD_SECURITY_KEYSTORE_KEYSTORECONFIGFILE                            | classpath:/secrets/keystore-config.json                     | Location of the keystore configuration file. This file contains various entry detail of the keystore content.                                                   |
+> | basswood.security.keystore.load-jwk-file-on-startup                           | BASSWOOD_SECURITY_KEYSTORE_LOADJWKFILEONSTARTUP                          | false                                                       | If set to true the JWK from the classpath resource will be loaded into the database on first startup. This feature is meant for development and testing.        |
+> | basswood.security.keystore.test-jwk-file                                      | BASSWOOD_SECURITY_KEYSTORE_TESTJWKFILE                                   | classpath:/secrets/jwk-for-testing.json                     | Classpath location of the JWK file containing test JWK for signature. This is meant for usage in development and testing environment class.                     |
+> | basswood.security.jwt.filter.disable                                          | BASSWOOD_SECURITY_JWT_FILTER_DISABLE                                     | false                                                       | Disable JWTFilter based security of the application. If disabled all APIs will become accessible without proper JWT. This is meant for test and development.    |
+> | basswood.security.jwt.default-subject                                         | BASSWOOD_SECURITY_JWT_DEFAULTSUBJECT                                     | webauthn_admin                                              | The default subject claim for JWT token.                                                                                                                        |
+> | basswood.security.jwt.default-issuer                                          | BASSWOOD_SECURITY_JWT_DEFAULTISSUER                                      | webauthn.basswood.io                                        | The default issuer claim for JWT token.                                                                                                                         |
+> | basswood.security.jwt.default-audience                                        | BASSWOOD_SECURITY_JWT_DEFAULTAUDIENCE                                    | webauthn.basswood.io                                        | The default audience claim for JWT token.                                                                                                                       |
+> | basswood.security.jwt.default-lifetime-seconds                                | BASSWOOD_SECURITY_JWT_DEFAULTLIFETIMESECONDS                             | 300                                                         | The default amount of seconds after issue time, at which the token would expir.                                                                                 |
+> | basswood.security.jwt.print-new-token-on-startup                              | BASSWOOD_SECURITY_JWT_PRINTNEWTOKENONSTARTUP                             | false                                                       | If set to true, On startup the application will print a JWT token on the console. Which then can be used to make additional API calls to setup the environment. |
+> 
+> 
 
 ## Management (REST) APIs
 

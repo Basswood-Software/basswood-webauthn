@@ -1,2 +1,0 @@
-# authenticator
-basswood-web-ms

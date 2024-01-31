@@ -315,17 +315,17 @@ curl --location \
 See [JWKCreateDTO](./webauthn/src/main/java/io/basswood/webauthn/dto/JWKCreateDTO.java)
 ```json
 {
-  "keyTypeEnum" : "RSA",
-  "keyUseEnum" : "SIGNATURE",
-  "keyLengthEnum" : "KEY_LENGTH_3072"
+  "kty" : "RSA",
+  "use" : "SIGNATURE",
+  "length" : "KEY_LENGTH_3072"
 }
 ```
 > | Filed           | Default           | Accepted Values                                     | Description                      | 
 > |-----------------|-------------------|-----------------------------------------------------|----------------------------------|
-> | `keyTypeEnum`   | `EC`              | `EC, RSA`                                           | `Spported keytype is EC and RSA` |
-> | `keyUseEnum`    | `SIGNATURE`       | `SIGNATURE, ENCRYPTION`                             | `The purpose of the key`         |
-> | `keyLengthEnum` | `KEY_LENGTH_2048` | `KEY_LENGTH_2048, KEY_LENGTH_3072, KEY_LENGTH_4096` | `Key length for RSA key`         |
-> | `curveEnum`     | `P_256`           | `P_256, P_384, P_521`                               | `Curve for the EC key`           |
+> | `kty`   | `EC`              | `EC, RSA`                                           | `Spported keytype is EC and RSA` |
+> | `use`    | `SIGNATURE`       | `SIGNATURE, ENCRYPTION`                             | `The purpose of the key`         |
+> | `length` | `KEY_LENGTH_2048` | `KEY_LENGTH_2048, KEY_LENGTH_3072, KEY_LENGTH_4096` | `Key length for RSA key`         |
+> | `curve`     | `P_256`           | `P_256, P_384, P_521`                               | `Curve for the EC key`           |
 >
 
 #### Request Header
@@ -351,9 +351,9 @@ curl --location --request POST 'http://red.basswoodid.com:9080/jwk' \
 --header 'Authorization: Bearer eyJraWQiOiJjMGJkZjRmYi0zZjM5LTQ3YzYtOWViMi04NmMxNDhjZmNhMWUiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ3ZWJhdXRobl9hZG1pbiIsImF1ZCI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwibmJmIjoxNzA2MjQwNzA4LCJyb2xlcyI6WyJqd2tfbWFuYWdlciIsInRva2VuX21hbmFnZXIiLCJycF9tYW5hZ2VyIiwidXNlcl9tYW5hZ2VyIl0sImlzcyI6IndlYmF1dGhuLmJhc3N3b29kLmlvIiwiZXhwIjoxODYzOTIwNzA4LCJpYXQiOjE3MDYyNDA3MDgsImp0aSI6ImE3NWJjNTY2LWEzYTYtNGZkNC1iZDA1LTdkMmMxMjQ5Zjc3MiJ9.Aymr4xRCRniwEwnntEZ5nnauyblbFk69BnR5ZzO89J4UKgV4rQLqZN8RT1Qo0LG5AxQ6ZMWeTLOPvtAWl5N4bQ' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "keyTypeEnum" : "RSA",
-    "keyUseEnum" : "SIGNATURE",
-    "keyLengthEnum" : "KEY_LENGTH_3072"
+    "kty" : "RSA",
+    "use" : "SIGNATURE",
+    "length" : "KEY_LENGTH_3072"
 }'
 ```
 </details>

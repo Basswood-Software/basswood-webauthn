@@ -294,7 +294,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"keyTypeEnum\" : \"RSA\",\n    \"keyUseEnum\" : \"SIGNATURE\",\n    \"keyLengthEnum\" : \"KEY_LENGTH_3072\"\n}",
+							"raw": "{\n    \"kty\" : \"RSA\",\n    \"use\" : \"SIGNATURE\",\n    \"length\" : \"KEY_LENGTH_3072\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -317,7 +317,7 @@
 								}
 							]
 						},
-						"description": "Creates a RSA JWK key for signature usage with length 3072. The supported length enums are\n\n1.  KEY_LENGTH_2048 (default)\n2.  KEY_LENGTH_3072\n3.  KEY_LENGTH_4096\n\nThe keyLengthEnum is only applicable when keyTypeEnum is set to RSA. For type EC keyLengthEnum is ignored if provided."
+						"description": "Creates a RSA JWK key for signature usage with length 3072. The supported length enums are\n\n1.  KEY_LENGTH_2048 (default)\n2.  KEY_LENGTH_3072\n3.  KEY_LENGTH_4096\n    \n\nThe `length` is only applicable when `kty` is set to RSA. For type EC `length` is ignored if provided."
 					},
 					"response": []
 				},
@@ -353,7 +353,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"keyTypeEnum\" : \"EC\",\n    \"keyUseEnum\" : \"ENCRYPTION\",\n    \"curveEnum\" : \"P_384\"\n}",
+							"raw": "{\n    \"kty\" : \"EC\",\n    \"use\" : \"ENCRYPTION\",\n    \"curve\" : \"P_384\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -376,7 +376,7 @@
 								}
 							]
 						},
-						"description": "Creates an EC JWK key for encryption usage with P_384 curve. The supported curveEnums are\n\n1.  P_256 (default)\n2.  P_384\n3.  P_521\n    \n\nThe curveEnum is only applicable when keyTypeEnum is set to EC. For type RSA curveEnum is ignored if provided."
+						"description": "Creates an EC JWK key for encryption usage with P_384 curve. The supported ``curve`` are\n\n1.  P_256 (default)\n2.  P_384\n3.  P_521\n    \n\nThe ``curve`` is only applicable when``kty`` is set to EC. For type RSA keys the ``curve`` is ignored if provided."
 					},
 					"response": []
 				},
@@ -1581,7 +1581,7 @@
 					"response": []
 				}
 			],
-			"description": "APIs in this folder demonstrates an end to end happy path flow for the webAuth APIs. Which involves registering credentials on the server side and later make assertion. The folder is mean to run as an integration tests.\n\nIn this test scenario 3 entities are involved\n\n1.  POSTMAN: works as the client application - say a browser application\n2.  Authenticator: A virtual authenticator - implemented as a web application. Like an actual authenticator it can store credential and later produce signature for assertion\n3.  WebAuthn Server: The server APIs that are under test. Objective of this postman collection folder is to test the Registration and Assertion APIs of the\n    \n\n**Test and Setup details**\n\n1.  SETUP: Create a User in the WebAuthn server\n2.  SETUP: Create a Relying Party in the WebAuthn server\n3.  SETUP: Create a Device in the authenticator\n4.  SETUP: Create a Virtual Autheticator under the Device created in the previous Step.\n5.  TEST: Start a registration call to the server.\n6.  TEST: Use the response from the previous step to create credential in the Virtual Authenticator.\n7.  TEST: Finish the registration on the sever by sending the response from the previous step as payload.\n8.  TEST: Start Assertion by sending the username\n9.  TEST: Use the server challenge payload from the previous step to get signature from the authenticator.\n10.  TEST: Send assertion response from the previous step to the server for verification.\n11.  CLEANUP: delete the User\n12.  CLEANUP: delete the Relying Party\n13.  CLEANUP: delete the Device and Virtual Autheticator"
+			"description": "APIs in this folder demonstrates an end to end happy path flow for the webAuth APIs. Which involves registering credentials on the server side and later make assertion against it. The folder is meant to run as an integration tests.\n\nIn this test scenario 3 entities are involved\n\n1.  POSTMAN: works as the client application - say a browser application\n2.  Authenticator: A virtual authenticator - implemented as a web application. Like an actual authenticator it can store credential and later produce signature for assertion\n3.  WebAuthn Server: The server APIs that are under test. Objective of this postman collection folder is to test the Registration and Assertion APIs of the\n    \n\n**Test and Setup details**\n\n1.  SETUP: Create a User in the WebAuthn server\n2.  SETUP: Create a Relying Party in the WebAuthn server\n3.  SETUP: Create a Device in the authenticator\n4.  SETUP: Create a Virtual Autheticator under the Device created in the previous Step.\n5.  TEST: Start a registration call to the server.\n6.  TEST: Use the response from the previous step to create credential in the Virtual Authenticator.\n7.  TEST: Finish the registration on the sever by sending the response from the previous step as payload.\n8.  TEST: Start Assertion by sending the username\n9.  TEST: Use the server challenge payload from the previous step to get signature from the authenticator.\n10.  TEST: Send assertion response from the previous step to the server for verification.\n11.  CLEANUP: delete the User\n12.  CLEANUP: delete the Relying Party\n13.  CLEANUP: delete the Device and Virtual Autheticator"
 		}
 	]
 }

@@ -11,7 +11,7 @@ public enum KeyLengthEnum {
         this.length = length;
     }
 
-    int length;
+    final int length;
 
     public int length(){
         return length;

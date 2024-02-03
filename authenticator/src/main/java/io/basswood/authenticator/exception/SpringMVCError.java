@@ -22,7 +22,7 @@ import java.util.Set;
 public class SpringMVCError extends RootException {
     public static final String DEFAULT_MESSAGE = "Spring MVC error";
 
-    private static final Set<Class<? extends Exception>> mvcExceptions = ImmutableSet.<Class<? extends Exception>>builder()
+     static final Set<Class<? extends Exception>> mvcExceptions = ImmutableSet.<Class<? extends Exception>>builder()
             .add(HttpRequestMethodNotSupportedException.class)
             .add(HttpMediaTypeNotSupportedException.class)
             .add(HttpMediaTypeNotAcceptableException.class)
@@ -45,39 +45,24 @@ public class SpringMVCError extends RootException {
     }
 
     private static ErrorCode mapMVCCode(Exception ex) {
-        if (HttpRequestMethodNotSupportedException.class == ex.getClass()) {
-            return ErrorCode.http_request_method_not_supported;
-        } else if (HttpMediaTypeNotSupportedException.class == ex.getClass()) {
-            return ErrorCode.http_mediatype_not_supported;
-        } else if (HttpMediaTypeNotAcceptableException.class == ex.getClass()) {
-            return ErrorCode.http_media_type_not_acceptable;
-        } else if (MissingPathVariableException.class == ex.getClass()) {
-            return ErrorCode.missing_path_variable;
-        } else if (MissingServletRequestParameterException.class == ex.getClass()) {
-            return ErrorCode.missing_servlet_request_part;
-        } else if (ServletRequestBindingException.class == ex.getClass()) {
-            return ErrorCode.servlet_request_binding;
-        } else if (ConversionNotSupportedException.class == ex.getClass()) {
-            return ErrorCode.conversion_not_supported;
-        } else if (TypeMismatchException.class == ex.getClass()) {
-            return ErrorCode.type_mismatch;
-        } else if (HttpMessageNotReadableException.class == ex.getClass()) {
-            return ErrorCode.http_message_not_readable;
-        } else if (HttpMessageNotWritableException.class == ex.getClass()) {
-            return ErrorCode.http_message_not_writable;
-        } else if (MethodArgumentNotValidException.class == ex.getClass()) {
-            return ErrorCode.method_argument_not_valid;
-        } else if (MissingServletRequestPartException.class == ex.getClass()) {
-            return ErrorCode.missing_servlet_request_part;
-        } else if (BindException.class == ex.getClass()) {
-            return ErrorCode.bind_exception;
-        } else if (NoHandlerFoundException.class == ex.getClass()) {
-            return ErrorCode.no_handler_found;
-        } else if (AsyncRequestTimeoutException.class == ex.getClass()) {
-            return ErrorCode.async_request_timeout;
-        } else {
-            return ErrorCode.server_error;
-        }
+        return switch (ex){
+            case HttpRequestMethodNotSupportedException ignored -> ErrorCode.http_request_method_not_supported;
+            case HttpMediaTypeNotSupportedException ignored -> ErrorCode.http_mediatype_not_supported;
+            case HttpMediaTypeNotAcceptableException ignore -> ErrorCode.http_media_type_not_acceptable;
+            case MissingPathVariableException ignore -> ErrorCode.missing_path_variable;
+            case MissingServletRequestParameterException ignore -> ErrorCode.missing_servlet_request_parameter;
+            case ServletRequestBindingException ignore -> ErrorCode.servlet_request_binding;
+            case ConversionNotSupportedException ignore -> ErrorCode.conversion_not_supported;
+            case TypeMismatchException ignore -> ErrorCode.type_mismatch;
+            case HttpMessageNotReadableException ignore -> ErrorCode.http_message_not_readable;
+            case HttpMessageNotWritableException ignore -> ErrorCode.http_message_not_writable;
+            case MethodArgumentNotValidException ignore -> ErrorCode.method_argument_not_valid;
+            case MissingServletRequestPartException ignore -> ErrorCode.missing_servlet_request_part;
+            case BindException ignore -> ErrorCode.bind_exception;
+            case NoHandlerFoundException ignore -> ErrorCode.no_handler_found;
+            case AsyncRequestTimeoutException ignore -> ErrorCode.async_request_timeout;
+            default -> ErrorCode.server_error;
+        };
     }
 
     public static boolean isSpringMVCException(Exception exception) {

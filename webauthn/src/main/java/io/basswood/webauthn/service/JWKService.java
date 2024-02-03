@@ -183,7 +183,7 @@ public class JWKService {
         jwkRepository.delete(optional.get());
         keyCache.invalidate(kid);
         if(latestEncryptionKey!=null && kid.equals(latestEncryptionKey.getKeyID())){
-            latestSignatureKey = null;
+            latestEncryptionKey = null;
         }
         if(latestSignatureKey!=null && kid.equals(latestSignatureKey.getKeyID())){
             latestSignatureKey = null;

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Date;
 import java.util.Optional;
 
-public interface JWKRepository extends JpaRepository<JWKEntity, Long> {
+public interface JWKRepository extends JpaRepository<JWKEntity, String> {
     Optional<JWKEntity> findDistinctByKid(String kid);
     Optional<JWKEntity> findFirstByKeyUseAndExpiryTimeAfterOrderByExpiryTimeDesc(KeyUseEnum keyUse, Date date);
 }

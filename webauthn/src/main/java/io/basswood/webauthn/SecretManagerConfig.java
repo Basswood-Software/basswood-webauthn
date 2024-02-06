@@ -21,13 +21,13 @@ import java.io.IOException;
 public class SecretManagerConfig {
     @Autowired
     private SecurityConfigurationProperties securityConfigurationProperties;
-    @Autowired
-    private Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
+//    @Autowired
+//    private Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder;
 
     @Bean
     public KeystoreConfig keystoreConfig() {
         try {
-            ObjectMapper objectMapper = jackson2ObjectMapperBuilder.build();
+            ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(securityConfigurationProperties.getKeyStoreConfig().getInputStream(), KeystoreConfig.class);
         } catch (IOException e) {
             throw new RootException("Error creating KeystoreConfig", e);

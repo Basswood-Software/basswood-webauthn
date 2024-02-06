@@ -34,8 +34,8 @@ server:
   port: 9080
 logging:
   config: log4j2-spring.xml
-  level:
-    ROOT: info
+#  level:
+#    ROOT: info
 
 management:
   health:

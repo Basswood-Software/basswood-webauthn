@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.util.Date;
 
 /**
@@ -30,7 +31,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class JWKEntity {
-    public static final Long ONE_MONTH_IN_MILLIS = 30 * 24 * 3600 * 1000L;
+    public static final Duration ONE_MONTH_DURATION = Duration.ofMillis(30 * 24 * 3600 * 1000L);
     @Id
     @Column(name = "kid")
     private String kid;
@@ -47,7 +48,7 @@ public class JWKEntity {
     @Column(name = "expiryTime")
     @Temporal(TemporalType.TIMESTAMP)
     @Builder.Default
-    private Date expiryTime = new Date(System.currentTimeMillis() + ONE_MONTH_IN_MILLIS);
+    private Date expiryTime = new Date(System.currentTimeMillis() + ONE_MONTH_DURATION.toMillis());
     @Column(name = "jwkData")
     @Convert(converter = AttributeEncryptionConverter.class)
     private String jwkData;

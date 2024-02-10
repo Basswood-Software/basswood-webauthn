@@ -8,7 +8,6 @@ import io.basswood.webauthn.secret.SecretManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;

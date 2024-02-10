@@ -42,6 +42,11 @@ public class UserService {
     public User createUser(User user) {
         if (user.getUserHandle() == null) {
             user.setUserHandle(generateRandomUserHandle());
+        } else {
+            Optional<User> optional = userRepository.findDistinctByUserHandle(user.getUserHandle());
+            if (optional.isPresent()) {
+                throw new DuplicateEntityFound(User.class, user.getUserHandle());
+            }
         }
         if (user.getUsernames() == null || user.getUsernames().isEmpty()) {
             throw new BadRequest("At least one username must be provided.");
@@ -57,10 +62,6 @@ public class UserService {
 
         User saveduser = userRepository.save(user);
         return saveduser;
-    }
-
-    public Optional<User> getUser(String userHandle) {
-        return userRepository.findDistinctByUserHandle(userHandle);
     }
 
     public Optional<User> deleteUser(String userHandle){

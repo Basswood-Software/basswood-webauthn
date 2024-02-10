@@ -3,34 +3,24 @@ package io.basswood.webauthn.service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.gen.ECKeyGenerator;
-import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
+import com.nimbusds.jose.jwk.KeyUse;
 import io.basswood.webauthn.dto.JWKCreateDTO;
 import io.basswood.webauthn.exception.DuplicateEntityFound;
 import io.basswood.webauthn.exception.EntityNotFound;
-import io.basswood.webauthn.exception.JWKException;
-import io.basswood.webauthn.model.jwk.CurveEnum;
 import io.basswood.webauthn.model.jwk.JWKEntity;
 import io.basswood.webauthn.model.jwk.JWKEntityConverter;
-import io.basswood.webauthn.model.jwk.KeyLengthEnum;
 import io.basswood.webauthn.model.jwk.KeyUseEnum;
 import io.basswood.webauthn.repository.JWKRepository;
-import jakarta.validation.constraints.NotNull;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static io.basswood.webauthn.model.jwk.JWKEntity.ONE_MONTH_IN_MILLIS;
+import static io.basswood.webauthn.model.jwk.JWKEntity.ONE_MONTH_DURATION;
 
 /**
  * @author shamualr
@@ -39,6 +29,8 @@ import static io.basswood.webauthn.model.jwk.JWKEntity.ONE_MONTH_IN_MILLIS;
 public class JWKService {
     private JWKRepository jwkRepository;
     private JWKEntityConverter converter;
+
+    private NimbusJOSEHelper nimbusJOSEHelper;
     private LoadingCache<String, JWKEntity> keyCache;
     private JWK latestSignatureKey;
     private JWK latestEncryptionKey;
@@ -46,6 +38,7 @@ public class JWKService {
     public JWKService(JWKRepository jwkRepository) {
         this.jwkRepository = jwkRepository;
         this.converter = new JWKEntityConverter();
+        this.nimbusJOSEHelper = new NimbusJOSEHelper();
         keyCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(1, TimeUnit.DAYS)
                 .maximumSize(1000)
@@ -62,11 +55,11 @@ public class JWKService {
                 });
     }
 
-
     public JWK createKey(JWKCreateDTO dto) {
+        KeyUse keyUse = converter.toKeyUse(dto.getKeyUseEnum());
         JWK jwk = switch (dto.getKeyTypeEnum()) {
-            case EC -> createECKey(dto.getKeyUseEnum(), dto.getCurveEnum());
-            case RSA -> createRSAKey(dto.getKeyUseEnum(), dto.getKeyLengthEnum());
+            case EC -> nimbusJOSEHelper.createECKey(keyUse, converter.toCurve(dto.getCurveEnum()), ONE_MONTH_DURATION);
+            case RSA -> nimbusJOSEHelper.createRSAKey(keyUse, dto.getKeyLengthEnum().length(), ONE_MONTH_DURATION);
         };
         JWKEntity entity = converter.toEntity(jwk);
         jwkRepository.save(entity);
@@ -85,32 +78,6 @@ public class JWKService {
         return saved;
     }
 
-    private RSAKey createRSAKey(@NotNull KeyUseEnum keyUseEnum, @NotNull KeyLengthEnum keyLengthEnum) {
-        try {
-            return new RSAKeyGenerator(keyLengthEnum.length())
-                    .keyID(UUID.randomUUID().toString())
-                    .keyUse(converter.toKeyUse(keyUseEnum))
-                    .issueTime(new Date())
-                    .expirationTime(new Date(System.currentTimeMillis() + ONE_MONTH_IN_MILLIS))
-                    .generate();
-        } catch (JOSEException e) {
-            throw new JWKException("Failed to create RSA Key", e);
-        }
-    }
-
-    private ECKey createECKey(KeyUseEnum keyUseEnum, CurveEnum curveEnum) {
-        try {
-            return new ECKeyGenerator(converter.toCurve(curveEnum))
-                    .keyID(UUID.randomUUID().toString())
-                    .keyUse(converter.toKeyUse(keyUseEnum))
-                    .issueTime(new Date())
-                    .expirationTime(new Date(System.currentTimeMillis() + ONE_MONTH_IN_MILLIS))
-                    .generate();
-        } catch (JOSEException e) {
-            throw new JWKException("Failed to create RSA Key", e);
-        }
-    }
-
     public Optional<JWKEntity> getJWKEntity(String kid) {
         // check cache first
         JWKEntity jwkEntity = keyCache.getIfPresent(kid);
@@ -123,7 +90,8 @@ public class JWKService {
             keyCache.put(kid, optional.get());
             return optional;
         }
-        return optional;    }
+        return optional;
+    }
 
     public JWKSet jwks() {
         List<JWKEntity> keys = jwkRepository.findAll();
@@ -191,10 +159,6 @@ public class JWKService {
     }
 
     public JWK parse(String jwk){
-        try {
-            return JWK.parse(jwk);
-        } catch (ParseException e) {
-            throw new JWKException("Failed to parse JWK key", e);
-        }
+        return nimbusJOSEHelper.parse(jwk);
     }
 }

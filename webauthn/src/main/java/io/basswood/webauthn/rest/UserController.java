@@ -28,7 +28,7 @@ public class UserController {
 
     @GetMapping("/user/{userHandle}")
     public User getUser(@PathVariable String userHandle) {
-        return userService.getUser(userHandle).orElseThrow(() -> new EntityNotFound(User.class, userHandle));
+        return userService.findUserById(userHandle).orElseThrow(() -> new EntityNotFound(User.class, userHandle));
     }
 
     @DeleteMapping("/user/{userHandle}")

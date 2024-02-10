@@ -2,11 +2,9 @@ package io.basswood.webauthn.dto;
 
 import io.basswood.webauthn.exception.RootException;
 import io.basswood.webauthn.model.rp.AuthenticatorPreference;
-import lombok.Builder;
 
 import java.util.Set;
 
-@Builder
 public record RelyingPartyDto(
         String id,
         String name,

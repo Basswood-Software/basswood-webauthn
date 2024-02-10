@@ -2,7 +2,6 @@ package io.basswood.authenticator.exception;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
@@ -19,11 +18,6 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-
-import java.beans.PropertyChangeEvent;
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SpringMVCErrorTest {
     @Test

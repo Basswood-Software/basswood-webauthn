@@ -18,6 +18,7 @@
     <modules>
         <module>webauthn</module>
         <module>authenticator</module>
+        <module>authenticator-lib</module>
     </modules>
     <properties>
         <!-- override spring boot dependency versions -->
@@ -40,6 +41,7 @@
         <mysql.connector.j.version>8.2.0</mysql.connector.j.version>
         <org.testcontainers.version>1.19.4</org.testcontainers.version>
         <rest-assured.version>5.4.0</rest-assured.version>
+        <jackson.version>2.15.3</jackson.version>
         <!-- plugin versions-->
         <maven-assembly-plugin.verison>3.6.0</maven-assembly-plugin.verison>
     </properties>

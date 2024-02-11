@@ -853,7 +853,7 @@ includes mysql user credential, required schema and tables. The artifacts in thi
 
 
 # Module Authenticator
-The authenticator module implements a Virtual Authenticator. The initial motivation for this module came from the
+The authenticator modules ([authenticator](./authenticator) and [authenticator-lib](./authenticator-lib)) implements a Virtual Authenticator. The initial motivation for these modules came from the
 automation need of the [WebAuthn module](/webauthn). The validity of the credential created ([registration](#registration-start))
 and later used during the authentication ([assertion](#assertion-finish)) can only be tested by using an actual
 FIDO2 compliant authenticator (e.g Yubico Key, Apple FaceId) and a client UI (e.g. Browser/Javascript) application.
@@ -863,8 +863,9 @@ produced by authenticators are complex [CBOR](https://cbor.io/) encoded cryptogr
 is not feasible, since the mocked data would not be able to verify signatures and other cryptographic contracts
 mandated by the FIDO2 specs. <br/>
 
-With the above limitation in mind this virtual authenticator was developed. Unlike real authenticator this virtual authenticator
-is a Spring Boot Web application that exposes the authenticator services via HTTP End Points. It primarily supports the following 2 APIs
+With the above limitation in mind this virtual authenticator was developed. The module [authenticator-lib](./authenticator-lib) is a 
+library that offers the concept of virtual authenticator; and the module [authenticator](./authenticator) is a Spring Boot
+Web application that exposes the authenticator services via HTTP End Points. It primarily supports the following 2 APIs
 1. [Credential Create](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/create) implemented by ``/device/credential/create`` endpoint. <br/>
    As part of the registration process this API can be used to create a credential within an authenticator. The API returns 
    properly encoded cryptographic data that the client can send to the server for registration 
@@ -876,18 +877,18 @@ For a complete end to end working example explore the Postman collection: [bassw
 
 ## Entities
 ![ERP Diagram](./artifacts/images/erp-diagram-authenticator.png) <br/>
-1. [Device](./authenticator/src/main/java/io/basswood/authenticator/model/Device.java) A Device represents an actual
+1. [Device](./authenticator-lib/src/main/java/io/basswood/authenticator/model/Device.java) A Device represents an actual
    device that can have one or more Authenticator attached to it. A device needs to be created first before adding any
    authenticators to it. From test perspective devices offers test isolation by providing different namespace for tests.
    This is further clarified in the API section below.
-2. [VirtualAuthenticator](./authenticator/src/main/java/io/basswood/authenticator/model/VirtualAuthenticator.java)
+2. [VirtualAuthenticator](./authenticator-lib/src/main/java/io/basswood/authenticator/model/VirtualAuthenticator.java)
    Core entity of this module that represents an actual authenticator. Like any regular authenticator each VirtualAuthenticator  
    has a unique ``[aaguid](https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-metadata-statement-v2.0-rd-20180702.html#authenticator-attestation-guid-aaguid-typedef)``.
    attachment preference, transport type etc. Most importantly this Object implements the [create()](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/create) 
    and [get()](https://developer.mozilla.org/en-US/docs/Web/API/CredentialsContainer/get) methods to create new credential for the User. 
-3. [CredentialRepository](./authenticator/src/main/java/io/basswood/authenticator/model/CredentialRepository.java) A map of 
+3. [CredentialRepository](./authenticator-lib/src/main/java/io/basswood/authenticator/model/CredentialRepository.java) A map of 
    Credentials being used by each Virtual Authenticator.
-4. [Credential](./authenticator/src/main/java/io/basswood/authenticator/model/Credential.java). A credential represents an
+4. [Credential](./authenticator-lib/src/main/java/io/basswood/authenticator/model/Credential.java). A credential represents an
    asymmetric key pair that a User must use to authenticate itself. The public portion of this key, along with other metadata
    is stored in the server as part of the [registration process](#webauthn-apis---registration). During the [assertion flow](#webauthn-apis---assertion)
    this key is used to sign and return the challenge from the server.

@@ -50,7 +50,8 @@ CREATE TABLE `webauthn_registered_credential` (
   `authenticatorAttachment` varchar(32) NULL,
   `signatureCount` bigint NOT NULL DEFAULT 0,
   `discoverable` tinyint NOT NULL default 1,
-  PRIMARY KEY (`credentialId`)
+  PRIMARY KEY (`credentialId`),
+  CONSTRAINT `fk_credential_user_handle` FOREIGN KEY (`userHandle`) REFERENCES `webauthn_user` (`userHandle`) ON delete CASCADE ON update CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `webauthn_authenticator_transport` (

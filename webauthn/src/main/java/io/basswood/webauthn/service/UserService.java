@@ -75,6 +75,6 @@ public class UserService {
     private String generateRandomUserHandle() {
         byte[] randomBytes = new byte[USER_HANDLE_LENGTH_IN_BYTES];
         secureRandom.nextBytes(randomBytes);
-        return Base64.getEncoder().encodeToString(randomBytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 }

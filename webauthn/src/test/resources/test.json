@@ -1,0 +1,15 @@
+{
+  "id": "c8c49c7a-bfca-455e-8591-34461390dd40ZXhhbXBsZS5jb20",
+  "response": {
+    "authenticatorData": "o3mm9u6vuaVeN4wRgDTidR5oL6ufLTCrE9ISVYbOGUdFAAAAAd6vwNh170wBlHKwyjwkyMMAJnPHOPXO2vm33GvuOeXvvOfdft-OOtd_dHXeNGV4YW1wbGUuY29tpQECAyYgASFYIG7KHJUHpNyy3lKcYzMmQ7VuSEjJMhWfEDgQ95AThFqcIlggqyLt1PexoGzM7faDEE9HSxkvRYcBDcWrDWUX_nPAhsM",
+    "clientDataJSON": "eyJjaGFsbGVuZ2UiOiI5VTdVd1ZfbGVPRERIMVVlQXJrZVJjeWF6dHRHUkIydGh0S3lUNmFjbVN3Iiwib3JpZ2luIjoiZXhhbXBsZS5jb20iLCJ0eXBlIjoid2ViYXV0aG4uZ2V0In0",
+    "signature": "MEQCIDK3amn3Ox4sCBGln7KEEbeSQ_7y43GWo0zEuy5rbd3kAiBstSfto0IEcphX7YLmQJ8hmxDIwWzpHfnLSmwGf__M3Q",
+    "userHandle": "c8c49c7a-bfca-455e-8591-34461390dd40"
+  },
+  "authenticatorAttachment": null,
+  "clientExtensionResults": {
+    "appid": null,
+    "largeBlob": null
+  },
+  "type": "public-key"
+}

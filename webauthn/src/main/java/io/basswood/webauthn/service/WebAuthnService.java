@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -95,11 +96,15 @@ public class WebAuthnService {
                 .orElseThrow(() -> new EntityNotFound(RelyingPartyEntity.class, rpOrigin));
         RelyingParty rp = relyingParty(relyingPartyEntity);
         PublicKeyCredentialCreationOptions request = cacheService.getCreateOptions(registrationId);
+        if(request == null){
+            String message = "No registration request with id:"+registrationId+" found";
+            log.debug(message);
+            throw new EntityNotFound(PublicKeyCredentialCreationOptions.class, registrationId);
+        }
         RegistrationResult result;
         try {
             result = rp.finishRegistration(FinishRegistrationOptions.builder()
-                    .request(request)  // The PublicKeyCredentialCreationOptions from startRegistration above
-                    // NOTE: Must be stored in server memory or otherwise protected against tampering
+                    .request(request)
                     .response(pkc)
                     .build());
         } catch (RegistrationFailedException e) {
@@ -151,7 +156,9 @@ public class WebAuthnService {
         try {
             pkc = PublicKeyCredential.parseAssertionResponseJson(publicKeyCredentialJson);
         } catch (IOException e) {
-            throw new RootException("Failed to parse publicKeyCredentialJson", e);
+            String message ="Failed to parse publicKeyCredentialJson";
+            log.debug(message, e);
+            throw new BadRequest(message, e);
         }
         RelyingPartyEntity relyingPartyEntity = relyingPartyService.findByOrigin(rpOrigin)
                 .orElseThrow(() -> new EntityNotFound(RelyingPartyEntity.class, rpOrigin));
@@ -159,12 +166,17 @@ public class WebAuthnService {
         RelyingParty rp = relyingParty(relyingPartyEntity);
         AssertionRequest request = cacheService.getAssertionRequest(loginHandle);
         if (request == null) {
+            String message = "No assertion request with id:"+loginHandle+" found";
+            log.debug(message);
             throw new EntityNotFound(AssertionRequest.class, loginHandle);
         }
+        //
+        List<RegisteredCredentialEntity> all = registeredCredentialEntityRepository.findAll();
+        //
         AssertionResult assertionResult;
         try {
             assertionResult = rp.finishAssertion(FinishAssertionOptions.builder()
-                    .request(request)  // The PublicKeyCredentialRequestOptions from startAssertion above
+                    .request(request)
                     .response(pkc)
                     .build());
         } catch (AssertionFailedException e) {

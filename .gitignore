@@ -35,3 +35,5 @@ build/
 ### docker database volume mount ###
 opt/docker/data/
 docker/data/
+### docker newman results
+docker/newman/results/

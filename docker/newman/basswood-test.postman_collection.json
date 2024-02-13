@@ -1,0 +1,643 @@
+{
+	"info": {
+		"_postman_id": "68303261-fc4e-424e-a1ad-a7a7bb3b5495",
+		"name": "basswood-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01. SETUP - Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"CREATE user - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var response = JSON.parse(responseBody);",
+							"pm.environment.set(\"userHandle\", response.userHandle);",
+							"pm.environment.set(\"displayName\", response.displayName);",
+							"pm.environment.set(\"userName\", response.usernames[0].username);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userHandle\" : \"{{$randomUUID}}\",\n    \"displayName\": \"Homer Simpson\",\n    \"usernames\" : [\n        {\n            \"username\" : \"homer.simpson@aol.com\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-webauthn-url-red}}/user",
+					"host": [
+						"{{basswood-webauthn-url-red}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02. SETUP - Create RelyingParty",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"CREATE RelyingParty - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var response = JSON.parse(responseBody);",
+							"pm.environment.set(\"rpId\", response.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\" : \"{{origin}}\",\n    \"name\": \"Basswood Red Client\",\n    \"attestation\" : \"NONE\",\n    \"authenticatorAttachment\" : \"PLATFORM\",\n    \"residentKey\" : \"DISCOURAGED\",\n    \"userVerification\" : \"DISCOURAGED\",\n    \"allowOriginPort\" : true,\n    \"allowOriginSubdomain\" : true,\n    \"timeout\": 60000,\n    \"origins\":[ \"localhost\", \"http://localhost:9080\", \"localhost:9080\", \"http://{{origin}}\", \"{{origin}}\" ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-webauthn-url-red}}/relying-party",
+					"host": [
+						"{{basswood-webauthn-url-red}}"
+					],
+					"path": [
+						"relying-party"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03. SETUP - Create Device",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"CREATE Device - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var response = JSON.parse(responseBody);",
+							"pm.environment.set(\"deviceId\", response.deviceId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"deviceId\" : \"{{$randomUUID}}\",\n    \"displayName\": \"iOS Device\",\n    \"tags\" : [\"test1\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-authenticator-url}}/device",
+					"host": [
+						"{{basswood-authenticator-url}}"
+					],
+					"path": [
+						"device"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04. SETUP - Create Authenticator",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"CREATE Autheticator - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var response = JSON.parse(responseBody);",
+							"pm.environment.set(\"aaguid\", response.aaguid);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"signatureCount\" : 1,\n    \"attachment\" : \"PLATFORM\",\n    \"transport\" : \"internal\",\n    \"supportedAlgorithms\" : [\"RS256\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-authenticator-url}}/device/{{deviceId}}/authenticator",
+					"host": [
+						"{{basswood-authenticator-url}}"
+					],
+					"path": [
+						"device",
+						"{{deviceId}}",
+						"authenticator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05. TEST - Registration Start",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Registration Start - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.have.header(\"registrationId\");",
+							"});",
+							"var response = JSON.parse(responseBody);",
+							"pm.environment.set(\"registrationId\", pm.response.headers.get(\"registrationId\"));",
+							"pm.environment.set(\"publicKey\", JSON.stringify(response));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Forwarded-Host",
+						"value": "{{origin}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{userName}}\",\n    \"displayName\": \"{{displayName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-webauthn-url-red}}/webauthn/registration",
+					"host": [
+						"{{basswood-webauthn-url-red}}"
+					],
+					"path": [
+						"webauthn",
+						"registration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "06. TEST - Credential Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Registration Start - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var response = JSON.parse(responseBody);",
+							"var credentialRegistrationDTO = JSON.stringify(response)",
+							"pm.environment.set(\"credentialRegistrationDTO\", credentialRegistrationDTO);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Forwarded-Host",
+						"value": "{{origin}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{publicKey}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-authenticator-url}}/device/credential/create?deviceId={{deviceId}}&aaguid={{aaguid}}",
+					"host": [
+						"{{basswood-authenticator-url}}"
+					],
+					"path": [
+						"device",
+						"credential",
+						"create"
+					],
+					"query": [
+						{
+							"key": "deviceId",
+							"value": "{{deviceId}}"
+						},
+						{
+							"key": "aaguid",
+							"value": "{{aaguid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "07. TEST - Registration Finish",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Registration Start - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Forwarded-Host",
+						"value": "{{origin}}",
+						"type": "text"
+					},
+					{
+						"key": "registrationId",
+						"value": "{{registrationId}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{credentialRegistrationDTO}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-webauthn-url-red}}/webauthn/registration",
+					"host": [
+						"{{basswood-webauthn-url-red}}"
+					],
+					"path": [
+						"webauthn",
+						"registration"
+					],
+					"query": [
+						{
+							"key": "registrationId",
+							"value": "{{registrationId}}",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "08. TEST - Assertion Start",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Assertion Start - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.have.header(\"loginHandle\");",
+							"});",
+							"var response = JSON.parse(responseBody);",
+							"pm.environment.set(\"loginHandle\", pm.response.headers.get(\"loginHandle\"));",
+							"pm.environment.set(\"credentialRequestOption\", JSON.stringify(response));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Forwarded-Host",
+						"value": "{{origin}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\" : \"{{userName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-webauthn-url-red}}/webauthn/assertion",
+					"host": [
+						"{{basswood-webauthn-url-red}}"
+					],
+					"path": [
+						"webauthn",
+						"assertion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "09. TEST - Credential Get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Credential Get - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var response = JSON.parse(responseBody);",
+							"var credentialAssertionDTO = JSON.stringify(response)",
+							"pm.environment.set(\"credentialAssertionDTO\", credentialAssertionDTO);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Forwarded-Host",
+						"value": "{{origin}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{credentialRequestOption}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-authenticator-url}}/device/credential/get?deviceId={{deviceId}}&aaguid={{aaguid}}",
+					"host": [
+						"{{basswood-authenticator-url}}"
+					],
+					"path": [
+						"device",
+						"credential",
+						"get"
+					],
+					"query": [
+						{
+							"key": "deviceId",
+							"value": "{{deviceId}}"
+						},
+						{
+							"key": "aaguid",
+							"value": "{{aaguid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10. TEST - Assertion Finish",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Assertion Finish - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"var response = JSON.parse(responseBody);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Forwarded-Host",
+						"value": "{{origin}}",
+						"type": "text"
+					},
+					{
+						"key": "loginHandle",
+						"value": "{{loginHandle}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{credentialAssertionDTO}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{basswood-webauthn-url-red}}/webauthn/assertion",
+					"host": [
+						"{{basswood-webauthn-url-red}}"
+					],
+					"path": [
+						"webauthn",
+						"assertion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11. CLEANUP - Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"DELETE user - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{basswood-webauthn-url-red}}/user/{{userHandle}}",
+					"host": [
+						"{{basswood-webauthn-url-red}}"
+					],
+					"path": [
+						"user",
+						"{{userHandle}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12. CLEANUP - Delete RelyingParty",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"DELETE RelyingParty - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{basswood-webauthn-url-red}}/relying-party/{{rpId}}",
+					"host": [
+						"{{basswood-webauthn-url-red}}"
+					],
+					"path": [
+						"relying-party",
+						"{{rpId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "13. CLEANUP - Delete Device",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"DELETE Device - Status code is 200 \", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{basswood-authenticator-url}}/device/{{deviceId}}",
+					"host": [
+						"{{basswood-authenticator-url}}"
+					],
+					"path": [
+						"device",
+						"{{deviceId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

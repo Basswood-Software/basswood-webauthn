@@ -6,7 +6,6 @@ services:
   mysqldb:
     image: basswood/mysqldb
     container_name: mysqldb
-    restart: always
     ports:
       - "3306:3306"
     networks:
@@ -70,3 +69,23 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
+
+  newman:
+    image: postman/newman:alpine
+    container_name: newman
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      webauthn:
+        condition: service_healthy
+      authenticator:
+        condition: service_healthy
+    networks:
+      - app-network
+    volumes:
+      - $PWD/newman:/etc/newman
+    command:
+      run basswood-test.postman_collection.json
+      -e basswood-webauthn-test.postman_environment.json
+      -r json,cli
+      --reporter-json-export=results/newman-results.json

@@ -2,7 +2,7 @@ package io.basswood.authenticator.service;
 
 import com.upokecenter.cbor.CBORObject;
 import com.yubico.webauthn.data.ByteArray;
-import io.basswood.authenticator.exception.RootException;
+import io.basswood.authenticator.exception.AuthenticatorException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public interface ByteArrayConverter {
             cborObject.WriteTo(baos);
             return new ByteArray(baos.toByteArray());
         } catch (IOException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 }

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.basswood.authenticator.exception.SerializationException;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import io.basswood.authenticator.model.Device;
 import io.basswood.authenticator.model.VirtualAuthenticator;
 
@@ -17,6 +17,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_BAD_REQUEST;
 
 public class DeviceDeserializer extends StdDeserializer<Device> {
     private VirtualAuthenticatorDeserializer virtualAuthenticatorDeserializer;
@@ -40,7 +42,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
         Set<String> tags = null;
         if (node != null) {
             if (!(node instanceof ArrayNode)) {
-                throw new SerializationException("tags must be an array");
+                throw new AuthenticatorException("Device serialization failed. tags must be an array", null, ERROR_CODE_BAD_REQUEST, 400);
             }
             ArrayNode arrayNode = (ArrayNode) node;
             if (arrayNode.size() > 0) {
@@ -62,7 +64,7 @@ public class DeviceDeserializer extends StdDeserializer<Device> {
                 }
             }
         } catch (Exception exception) {
-            throw new SerializationException(exception);
+            throw new AuthenticatorException("Device serialization failed", exception, ERROR_CODE_BAD_REQUEST, 400);
         }
 
         return Device.builder()

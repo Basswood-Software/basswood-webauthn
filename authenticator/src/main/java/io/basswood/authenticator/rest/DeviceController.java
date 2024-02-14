@@ -9,7 +9,7 @@ import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import io.basswood.authenticator.dto.AuthenticatorCreateDTO;
 import io.basswood.authenticator.dto.DeviceCreateDTO;
-import io.basswood.authenticator.exception.EntityNotFound;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import io.basswood.authenticator.model.Device;
 import io.basswood.authenticator.model.VirtualAuthenticator;
 import io.basswood.authenticator.service.DeviceService;
@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_NOT_FOUND;
 
 @RestController
 public class DeviceController {
@@ -45,7 +47,7 @@ public class DeviceController {
     public Device getDevice(@PathVariable UUID deviceId) {
         Optional<Device> device = deviceService.getDevice(deviceId);
         if (!device.isPresent()) {
-            throw new EntityNotFound(Device.class, deviceId.toString());
+            throw new AuthenticatorException("No Device found with id:" + deviceId.toString(), ERROR_CODE_NOT_FOUND, 404);
         }
         return device.get();
     }

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.jwk.JWK;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.exception.Base64UrlException;
-import io.basswood.authenticator.exception.RootException;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import io.basswood.authenticator.model.Credential;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class CredentialDeserializer extends StdDeserializer<Credential> {
             JWK jwk = JWK.parse(keyString);
             return new Credential(credentialId, userId, rpId, jwk);
         } catch (Base64UrlException | ParseException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 }

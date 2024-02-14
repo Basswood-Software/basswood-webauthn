@@ -20,14 +20,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Exception.class, RuntimeException.class})
-    public ResponseEntity<ErrorDto> handleUncaughtExceptions(Exception ex, WebRequest request) {
+    public ResponseEntity<AuthenticatorErrorDto> handleUncaughtExceptions(Exception ex, WebRequest request) {
         log.error("Uncaught exception", ex);
-        return handleRootException(new RootException(ex), request);
+        return handleRootException(new AuthenticatorException(ex), request);
     }
 
-    @ExceptionHandler({RootException.class})
-    public ResponseEntity<ErrorDto> handleRootException(RootException ex, WebRequest request) {
-        return ResponseEntity.status(ex.getHttpStatus())
+    @ExceptionHandler({AuthenticatorException.class})
+    public ResponseEntity<AuthenticatorErrorDto> handleRootException(AuthenticatorException ex, WebRequest request) {
+        return ResponseEntity.status(ex.getErrorStatus())
                 .body(ex.toErrorDto(((ServletWebRequest) request).getRequest().getRequestURI()));
     }
 
@@ -35,7 +35,7 @@ public class GlobalErrorHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(
             Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         if (SpringMVCError.isSpringMVCException(ex)) {
-            ResponseEntity<ErrorDto> errorDtoResponseEntity = handleRootException(new SpringMVCError(ex, status.value()), request);
+            ResponseEntity<AuthenticatorErrorDto> errorDtoResponseEntity = handleRootException(new SpringMVCError(ex, status.value()), request);
             return ResponseEntity.status(errorDtoResponseEntity.getStatusCode())
                     .body(errorDtoResponseEntity.getBody());
         } else {

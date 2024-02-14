@@ -7,7 +7,7 @@ import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import io.basswood.authenticator.dto.DeviceDeserializer;
 import io.basswood.authenticator.dto.DeviceSerializer;
-import io.basswood.authenticator.exception.DuplicateEntityFound;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_DUPLICATE_ENTITY;
 
 @JsonSerialize(using = DeviceSerializer.class)
 @JsonDeserialize(using = DeviceDeserializer.class)
@@ -59,7 +61,8 @@ public class Device {
 
     public VirtualAuthenticator addAuthenticator(VirtualAuthenticator authenticator) {
         if (authenticators.containsKey(authenticator.getAaguid())) {
-            throw new DuplicateEntityFound(VirtualAuthenticator.class, authenticator.getAaguid().toString());
+            throw new AuthenticatorException("A virtual authenticator with the same id: " + authenticator.getAaguid().toString() + " already exists",
+                    null, ERROR_CODE_DUPLICATE_ENTITY, 409);
         }
         authenticators.put(authenticator.getAaguid(), authenticator);
         return authenticator;

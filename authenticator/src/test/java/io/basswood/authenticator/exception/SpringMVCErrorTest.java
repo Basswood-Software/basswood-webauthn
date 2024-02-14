@@ -22,37 +22,37 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 class SpringMVCErrorTest {
     @Test
     void mapMVCCode(){
-        Assertions.assertEquals(ErrorCode.http_request_method_not_supported,
+        Assertions.assertEquals("http_request_method_not_supported",
                 new SpringMVCError(Mockito.mock(HttpRequestMethodNotSupportedException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.http_mediatype_not_supported,
+        Assertions.assertEquals("http_media_type_not_supported",
                 new SpringMVCError(Mockito.mock(HttpMediaTypeNotSupportedException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.http_media_type_not_acceptable,
+        Assertions.assertEquals("http_media_type_not_acceptable",
                 new SpringMVCError(Mockito.mock(HttpMediaTypeNotAcceptableException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.missing_path_variable,
+        Assertions.assertEquals("missing_path_variable",
                 new SpringMVCError(Mockito.mock(MissingPathVariableException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.missing_servlet_request_parameter,
+        Assertions.assertEquals("missing_servlet_request_parameter",
                 new SpringMVCError(Mockito.mock(MissingServletRequestParameterException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.servlet_request_binding,
+        Assertions.assertEquals("servlet_request_binding",
                 new SpringMVCError(Mockito.mock(ServletRequestBindingException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.conversion_not_supported,
+        Assertions.assertEquals("conversion_not_supported",
                 new SpringMVCError(Mockito.mock(ConversionNotSupportedException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.type_mismatch,
+        Assertions.assertEquals("type_mismatch",
                 new SpringMVCError(Mockito.mock(TypeMismatchException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.http_message_not_readable,
+        Assertions.assertEquals("http_message_not_readable",
                 new SpringMVCError(Mockito.mock(HttpMessageNotReadableException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.http_message_not_writable,
+        Assertions.assertEquals("http_message_not_writable",
                 new SpringMVCError(Mockito.mock(HttpMessageNotWritableException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.method_argument_not_valid,
+        Assertions.assertEquals("method_argument_not_valid",
                 new SpringMVCError(Mockito.mock(MethodArgumentNotValidException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.missing_servlet_request_part,
+        Assertions.assertEquals("missing_servlet_request_part",
                 new SpringMVCError(Mockito.mock(MissingServletRequestPartException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.bind_exception,
+        Assertions.assertEquals("bind_exception",
                 new SpringMVCError(Mockito.mock(BindException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.no_handler_found,
+        Assertions.assertEquals("no_handler_found",
                 new SpringMVCError(Mockito.mock(NoHandlerFoundException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.async_request_timeout,
+        Assertions.assertEquals("async_request_timeout",
                 new SpringMVCError(Mockito.mock(AsyncRequestTimeoutException.class), 500).getErrorCode());
-        Assertions.assertEquals(ErrorCode.server_error,
+        Assertions.assertEquals("server_error",
                 new SpringMVCError(Mockito.mock(Exception.class), 500).getErrorCode());
     }
 

@@ -1,6 +1,6 @@
 package io.basswood.authenticator.service;
 
-import io.basswood.authenticator.exception.DuplicateEntityFound;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import io.basswood.authenticator.model.Device;
 
 import java.util.Collections;
@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_DUPLICATE_ENTITY;
 
 public class DeviceDAO {
     private Map<UUID, Device> repo;
@@ -24,7 +26,8 @@ public class DeviceDAO {
 
     public Device create(Device device) {
         if (repo.containsKey(device.getDeviceId())) {
-            throw new DuplicateEntityFound(Device.class, device.getDeviceId().toString());
+            throw new AuthenticatorException("A device with the same id: " + device.getDeviceId().toString() + " already exists",
+                    null, ERROR_CODE_DUPLICATE_ENTITY, 409);
         }
         repo.put(device.getDeviceId(), device);
         return device;

@@ -13,8 +13,7 @@ import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.upokecenter.cbor.CBORObject;
 import com.upokecenter.numbers.EInteger;
 import com.yubico.webauthn.data.ByteArray;
-import io.basswood.authenticator.exception.RootException;
-import io.basswood.authenticator.yubico.WebAuthnCodecs;
+import io.basswood.authenticator.exception.AuthenticatorException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,7 +33,7 @@ public class KeySerializationSupport {
         } else if (type == ECKey.class) {
             return (T) randomECKeyPair();
         } else {
-            throw new RootException("Key type: " + type.getName() + " not supported.");
+            throw new AuthenticatorException("Key type: " + type.getName() + " not supported.");
         }
     }
 
@@ -45,7 +44,7 @@ public class KeySerializationSupport {
                     .keyID(UUID.randomUUID().toString())
                     .generate();
         } catch (JOSEException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
@@ -55,7 +54,7 @@ public class KeySerializationSupport {
             rsaPublicKey = (RSAPublicKey) rsaKey.toPublicKey();
             return toRSAPublicKeyCOSE(rsaPublicKey);
         } catch (JOSEException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
@@ -67,7 +66,7 @@ public class KeySerializationSupport {
         try {
             CBORObject.Write(cborMap, baos);
         } catch (IOException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
         CBORObject cose = CBORObject.Read(new ByteArrayInputStream(baos.toByteArray()));
         return cose;
@@ -80,7 +79,7 @@ public class KeySerializationSupport {
         try {
             return (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(spec);
         } catch (Exception e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
@@ -91,7 +90,7 @@ public class KeySerializationSupport {
                     .keyID(UUID.randomUUID().toString())
                     .generate();
         } catch (JOSEException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
@@ -101,22 +100,21 @@ public class KeySerializationSupport {
             ecPublicKey = (ECPublicKey) ecKey.toPublicKey();
             return toECPublicKeyCOSE(ecPublicKey);
         } catch (JOSEException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
     public static CBORObject toECPublicKeyCOSE(ECPublicKey ecPublicKey) {
-        ByteArray byteArray = WebAuthnCodecs.ecPublicKeyToRaw(ecPublicKey);
-        ByteArray cborBytes = WebAuthnCodecs.rawEcKeyToCose(byteArray);
+        ByteArray byteArray = YubicoWebAuthnCodecs.ecPublicKeyToRaw(ecPublicKey);
+        ByteArray cborBytes = YubicoWebAuthnCodecs.rawEcKeyToCose(byteArray);
         CBORObject cose = CBORObject.Read(new ByteArrayInputStream(cborBytes.getBytes()));
         return cose;
     }
-
     public static ECPublicKey fromECCOSE(CBORObject cose) {
         try {
             return (ECPublicKey) new OneKey(cose).AsPublicKey();
         } catch (CoseException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
@@ -126,7 +124,7 @@ public class KeySerializationSupport {
         } else if (jwk instanceof ECKey) {
             return toECPublicKeyCOSE(((ECKey) jwk).toPublicJWK());
         } else {
-            throw new RootException("Key type:" + jwk.getClass().getName() + " not supported");
+            throw new AuthenticatorException("Key type:" + jwk.getClass().getName() + " not supported");
         }
     }
 }

@@ -6,7 +6,7 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.yubico.webauthn.data.ByteArray;
-import io.basswood.authenticator.exception.RootException;
+import io.basswood.authenticator.exception.AuthenticatorException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -48,7 +48,7 @@ public class CryptoUtil {
             sig.update(message.getBytes());
             return new ByteArray(sig.sign());
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
@@ -59,7 +59,7 @@ public class CryptoUtil {
             sig.update(message.getBytes());
             return new ByteArray(sig.sign());
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
@@ -71,9 +71,9 @@ public class CryptoUtil {
                 return signWithECKey(message, jwk.toECKey().toECPrivateKey());
             }
         } catch (JOSEException ex) {
-            throw new RootException(ex);
+            throw new AuthenticatorException(ex);
         }
-        throw new RootException("Key type:" + jwk.getClass().getName() + " not supported");
+        throw new AuthenticatorException("Key type:" + jwk.getClass().getName() + " not supported");
     }
 
     public static boolean verifySignatureWithRSAKey(ByteArray signature, ByteArray message, RSAPublicKey rsaPublicKey) {
@@ -83,7 +83,7 @@ public class CryptoUtil {
             sign.update(message.getBytes());
             return sign.verify(signature.getBytes());
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 
@@ -94,7 +94,7 @@ public class CryptoUtil {
             sign.update(message.getBytes());
             return sign.verify(signature.getBytes());
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
     }
 }

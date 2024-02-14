@@ -22,10 +22,7 @@ import com.yubico.webauthn.data.PublicKeyCredentialParameters;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import io.basswood.authenticator.dto.VirtualAuthenticatorDeserializer;
 import io.basswood.authenticator.dto.VirtualAuthenticatorSerializer;
-import io.basswood.authenticator.exception.AlgorithmMismatch;
-import io.basswood.authenticator.exception.BadRequest;
-import io.basswood.authenticator.exception.ConflictException;
-import io.basswood.authenticator.exception.CredentialMismatch;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import io.basswood.authenticator.service.ByteArrayConverter;
 import io.basswood.authenticator.service.CryptoUtil;
 import io.basswood.authenticator.service.KeySerializationSupport;
@@ -45,6 +42,8 @@ import java.util.stream.Collectors;
 
 import static com.yubico.webauthn.data.COSEAlgorithmIdentifier.ES256;
 import static com.yubico.webauthn.data.COSEAlgorithmIdentifier.RS256;
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_BAD_REQUEST;
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_DUPLICATE_ENTITY;
 import static io.basswood.authenticator.service.CryptoUtil.sha256;
 
 @JsonSerialize(using = VirtualAuthenticatorSerializer.class)
@@ -98,13 +97,15 @@ public class VirtualAuthenticator implements Authenticator {
         ByteArray rpId = new ByteArray(options.getRp().getId().getBytes(StandardCharsets.UTF_8));
         Optional<Credential> credentialOptional = repository.findCredential(userId, rpId);
         if (credentialOptional.isPresent()) {
-            throw new ConflictException("Credential already present for rpId: " + rpId + " and userId: " + userId);
+            throw new AuthenticatorException("Credential already present for rpId: " + rpId + " and userId: " + userId,
+                    null, ERROR_CODE_DUPLICATE_ENTITY, 409);
         }
         Set<PublicKeyCredentialParameters> matchedAlgorithms = options.getPubKeyCredParams().stream()
                 .filter(t -> supportedAlgorithms.contains(t.getAlg()))
                 .collect(Collectors.toSet());
         if (matchedAlgorithms.isEmpty()) {
-            throw new AlgorithmMismatch(getAaguid());
+            throw new AuthenticatorException("The authenticator with id: " + aaguid.toString() + " does not support the requested algorithm",
+                    ERROR_CODE_BAD_REQUEST);
         }
         Credential credential = new Credential(userId, rpId, ECKey.class);
         repository.add(credential);
@@ -119,7 +120,8 @@ public class VirtualAuthenticator implements Authenticator {
     public PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> get(PublicKeyCredentialRequestOptions options) {
         Set<Credential> credentials = matchedCredentials(options);
         if (credentials.isEmpty()) {
-            throw new CredentialMismatch(getAaguid());
+            throw new AuthenticatorException("The authenticator with id: " + aaguid.toString() + " does not contain the allowed credentials",
+                    null, ERROR_CODE_BAD_REQUEST, 400);
         }
         Credential credential = credentials.iterator().next();
         PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> publicKeyCredential = PublicKeyCredential
@@ -186,7 +188,7 @@ public class VirtualAuthenticator implements Authenticator {
                     .userHandle(credential.getUserId())
                     .build();
         } catch (Exception e) {
-            throw new BadRequest("Failed to crate AuthenticatorAssertionResponse", e);
+            throw new AuthenticatorException("Failed to crate AuthenticatorAssertionResponse", e, ERROR_CODE_BAD_REQUEST, 400);
         }
     }
 
@@ -199,7 +201,7 @@ public class VirtualAuthenticator implements Authenticator {
                     .transports(new LinkedHashSet<>(Arrays.asList(authenticatorTransport)))
                     .build();
         } catch (Exception e) {
-            throw new BadRequest("Failed to create AuthenticatorAttestationResponse", e);
+            throw new AuthenticatorException("Failed to create AuthenticatorAttestationResponse", e, ERROR_CODE_BAD_REQUEST, 400);
         }
     }
 
@@ -215,7 +217,7 @@ public class VirtualAuthenticator implements Authenticator {
             objectMapper.writeValue(baos, objectNode);
             return ByteArray.fromBase64Url(Base64.getUrlEncoder().encodeToString(baos.toByteArray()));
         } catch (Exception e) {
-            throw new BadRequest("Failed to create clientDataJSON", e);
+            throw new AuthenticatorException("Failed to create clientDataJSON", e, ERROR_CODE_BAD_REQUEST, 400);
         }
     }
 

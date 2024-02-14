@@ -11,10 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ErrorDto {
+public class AuthenticatorErrorDto {
     private String errorCode;
     private String errorMessage;
-    private int status;
+    private int errorStatus;
     private long timestamp;
     private String path;
     private StackTraceElement[] trace;

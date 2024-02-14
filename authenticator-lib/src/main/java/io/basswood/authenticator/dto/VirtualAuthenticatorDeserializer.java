@@ -11,7 +11,7 @@ import com.yubico.webauthn.data.AuthenticatorAttachment;
 import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.COSEAlgorithmIdentifier;
-import io.basswood.authenticator.exception.RootException;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import io.basswood.authenticator.model.CredentialRepository;
 import io.basswood.authenticator.model.VirtualAuthenticator;
 
@@ -46,7 +46,7 @@ public class VirtualAuthenticatorDeserializer extends StdDeserializer<VirtualAut
             }
         }
         if (authenticatorAttachment == null) {
-            throw new RootException("Invalid value for authenticator attachment:" + attachment);
+            throw new AuthenticatorException("Invalid value for authenticator attachment:" + attachment);
         }
 
         String transport = jsonNode.get("transport").textValue();
@@ -61,10 +61,10 @@ public class VirtualAuthenticatorDeserializer extends StdDeserializer<VirtualAut
         try {
             key = JWK.parse(jsonNode.get("key").toString());
         } catch (ParseException e) {
-            throw new RootException(e);
+            throw new AuthenticatorException(e);
         }
         if (key == null) {
-            throw new RootException("Failed to serialize key");
+            throw new AuthenticatorException("Failed to serialize key");
         }
 
         JsonNode repoNode = jsonNode.get("repository");

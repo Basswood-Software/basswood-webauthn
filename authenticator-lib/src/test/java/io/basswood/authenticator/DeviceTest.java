@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.yubico.webauthn.data.AuthenticatorTransport;
 import com.yubico.webauthn.data.COSEAlgorithmIdentifier;
-import io.basswood.authenticator.dto.DeviceCreateDTO;
 import io.basswood.authenticator.model.Device;
 import io.basswood.authenticator.model.VirtualAuthenticator;
 import io.basswood.authenticator.service.KeySerializationSupport;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -22,7 +20,6 @@ import java.util.UUID;
 import static com.yubico.webauthn.data.AuthenticatorAttachment.CROSS_PLATFORM;
 import static com.yubico.webauthn.data.AuthenticatorAttachment.PLATFORM;
 import static com.yubico.webauthn.data.AuthenticatorTransport.INTERNAL;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 
 class DeviceTest {
 
@@ -65,16 +62,5 @@ class DeviceTest {
         Assertions.assertEquals(device.getDisplayName(), actual.getDisplayName());
         Assertions.assertArrayEquals(device.getTags().toArray(), actual.getTags().toArray());
         Assertions.assertEquals(device.authenticators().size(), actual.authenticators().size());
-    }
-
-    @Test
-    void testDeviceCreateDTO(){
-        DeviceCreateDTO deviceCreateDTO = DeviceCreateDTO.builder().build();
-        Assertions.assertNotNull(deviceCreateDTO.getDeviceId());
-        Assertions.assertEquals(deviceCreateDTO.getDisplayName(), String.format("Device-%s", deviceCreateDTO.getDeviceId()));
-        Assertions.assertArrayEquals(
-                deviceCreateDTO.getTags().toArray(new String[0]),
-                new String[]{ISO_LOCAL_DATE.format(LocalDate.now())}
-        );
     }
 }

@@ -39,7 +39,7 @@ public class CredentialRepositoryImpl implements CredentialRepository {
         }
         Set<RegisteredCredentialEntity> credentials = registeredCredentialEntityRepository.findByUser(user);
         if (credentials == null || credentials.isEmpty()) {
-            //throw new RootException();
+            //throw new AuthenticatorException();
             return new LinkedHashSet<>();
         }
         return credentials.stream().map(credential -> map(credential)).collect(Collectors.toSet());

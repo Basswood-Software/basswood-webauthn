@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yubico.webauthn.data.ByteArray;
 import io.basswood.authenticator.dto.CredentialRepositoryDeserializer;
 import io.basswood.authenticator.dto.CredentialRepositorySerializer;
-import io.basswood.authenticator.exception.RootException;
+import io.basswood.authenticator.exception.AuthenticatorException;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -41,7 +41,7 @@ public class CredentialRepository {
 
     public void add(Credential credential) {
         if (repository.containsKey(credential.getCredentialId())) {
-            throw new RootException("credential already exists");
+            throw new AuthenticatorException("credential already exists");
         }
         repository.put(credential.getCredentialId(), credential);
     }

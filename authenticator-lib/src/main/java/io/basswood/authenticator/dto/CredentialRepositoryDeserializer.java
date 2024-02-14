@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yubico.webauthn.data.ByteArray;
-import io.basswood.authenticator.exception.RootException;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import io.basswood.authenticator.model.Credential;
 import io.basswood.authenticator.model.CredentialRepository;
 
@@ -37,7 +37,7 @@ public class CredentialRepositoryDeserializer extends StdDeserializer<Credential
             }
             return new CredentialRepository(repository);
         }catch (Exception ex){
-            throw new RootException(ex);
+            throw new AuthenticatorException(ex);
         }
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Set;
 
-public class SpringMVCError extends RootException {
+public class SpringMVCError extends AuthenticatorException {
     public static final String DEFAULT_MESSAGE = "Spring MVC error";
 
      static final Set<Class<? extends Exception>> mvcExceptions = ImmutableSet.<Class<? extends Exception>>builder()
@@ -44,24 +44,24 @@ public class SpringMVCError extends RootException {
         super(DEFAULT_MESSAGE, exception, mapMVCCode(exception), status);
     }
 
-    private static ErrorCode mapMVCCode(Exception ex) {
+    private static String mapMVCCode(Exception ex) {
         return switch (ex){
-            case HttpRequestMethodNotSupportedException ignored -> ErrorCode.http_request_method_not_supported;
-            case HttpMediaTypeNotSupportedException ignored -> ErrorCode.http_mediatype_not_supported;
-            case HttpMediaTypeNotAcceptableException ignore -> ErrorCode.http_media_type_not_acceptable;
-            case MissingPathVariableException ignore -> ErrorCode.missing_path_variable;
-            case MissingServletRequestParameterException ignore -> ErrorCode.missing_servlet_request_parameter;
-            case ServletRequestBindingException ignore -> ErrorCode.servlet_request_binding;
-            case ConversionNotSupportedException ignore -> ErrorCode.conversion_not_supported;
-            case TypeMismatchException ignore -> ErrorCode.type_mismatch;
-            case HttpMessageNotReadableException ignore -> ErrorCode.http_message_not_readable;
-            case HttpMessageNotWritableException ignore -> ErrorCode.http_message_not_writable;
-            case MethodArgumentNotValidException ignore -> ErrorCode.method_argument_not_valid;
-            case MissingServletRequestPartException ignore -> ErrorCode.missing_servlet_request_part;
-            case BindException ignore -> ErrorCode.bind_exception;
-            case NoHandlerFoundException ignore -> ErrorCode.no_handler_found;
-            case AsyncRequestTimeoutException ignore -> ErrorCode.async_request_timeout;
-            default -> ErrorCode.server_error;
+            case HttpRequestMethodNotSupportedException ignored -> "http_request_method_not_supported";
+            case HttpMediaTypeNotSupportedException ignored -> "http_media_type_not_supported";
+            case HttpMediaTypeNotAcceptableException ignored -> "http_media_type_not_acceptable";
+            case MissingPathVariableException ignored -> "missing_path_variable";
+            case MissingServletRequestParameterException ignored -> "missing_servlet_request_parameter";
+            case ServletRequestBindingException ignored -> "servlet_request_binding";
+            case ConversionNotSupportedException ignored -> "conversion_not_supported";
+            case TypeMismatchException ignored -> "type_mismatch";
+            case HttpMessageNotReadableException ignored -> "http_message_not_readable";
+            case HttpMessageNotWritableException ignored -> "http_message_not_writable";
+            case MethodArgumentNotValidException ignored -> "method_argument_not_valid";
+            case MissingServletRequestPartException ignored -> "missing_servlet_request_part";
+            case BindException ignored -> "bind_exception";
+            case NoHandlerFoundException ignored -> "no_handler_found";
+            case AsyncRequestTimeoutException ignored -> "async_request_timeout";
+            default -> "server_error";
         };
     }
 

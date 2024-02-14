@@ -9,16 +9,17 @@ import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import io.basswood.authenticator.dto.AuthenticatorCreateDTO;
 import io.basswood.authenticator.dto.DeviceCreateDTO;
-import io.basswood.authenticator.exception.AuthenticatorMismatch;
-import io.basswood.authenticator.exception.BadRequest;
-import io.basswood.authenticator.exception.DuplicateEntityFound;
-import io.basswood.authenticator.exception.EntityNotFound;
+import io.basswood.authenticator.exception.AuthenticatorException;
 import io.basswood.authenticator.model.Device;
 import io.basswood.authenticator.model.VirtualAuthenticator;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_BAD_REQUEST;
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_DUPLICATE_ENTITY;
+import static io.basswood.authenticator.exception.AuthenticatorException.ERROR_CODE_NOT_FOUND;
 
 public class DeviceService {
     private final DeviceDAO deviceDAO;
@@ -59,7 +60,7 @@ public class DeviceService {
 
     public void importDevices(Set<Device> devices, boolean overwrite) {
         if (devices == null || devices.isEmpty()) {
-            throw new BadRequest("No devices to add");
+            throw new AuthenticatorException("No devices to add", null, ERROR_CODE_BAD_REQUEST, 400);
         }
         if (!overwrite) {
             Optional<Optional<Device>> first = devices.stream()
@@ -67,7 +68,8 @@ public class DeviceService {
                     .filter(o -> o.isPresent())
                     .findFirst();
             if (first.isPresent()) { // device found
-                throw new DuplicateEntityFound(Device.class, first.get().get().getDeviceId().toString());
+                throw new AuthenticatorException("A device with the same id: " + first.get().get().getDeviceId().toString() + " already exists",
+                        null, ERROR_CODE_DUPLICATE_ENTITY, 409);
             }
         }
         devices.stream().forEach(device -> deviceDAO.update(device));
@@ -80,7 +82,7 @@ public class DeviceService {
     public VirtualAuthenticator createAuthenticator(UUID deviceId, AuthenticatorCreateDTO authenticatorCreateDTO) {
         Optional<Device> deviceOptional = getDevice(deviceId);
         if (deviceOptional.isEmpty()) {
-            throw new EntityNotFound(DeviceService.class, deviceId.toString());
+            throw new AuthenticatorException("No Device found with id:" + deviceId.toString(), ERROR_CODE_NOT_FOUND, 404);
         }
         VirtualAuthenticator authenticator = VirtualAuthenticator.builder()
                 .aaguid(UUID.randomUUID())
@@ -99,7 +101,7 @@ public class DeviceService {
         Device device = deviceDAO.getDevice(deviceId).get();
         VirtualAuthenticator authenticator = device.getVirtualAuthenticator(authenticatorId).get();
         if (!authenticator.matchForRegistration(options)) {
-            throw new AuthenticatorMismatch(authenticatorId);
+            throw new AuthenticatorException("The authenticator with id: " + authenticator.getAaguid().toString() + " does not support the requested option", ERROR_CODE_BAD_REQUEST);
         }
         return authenticator.create(options);
     }
@@ -109,7 +111,9 @@ public class DeviceService {
         Device device = deviceDAO.getDevice(deviceId).get();
         VirtualAuthenticator authenticator = device.getVirtualAuthenticator(authenticatorId).get();
         if (!authenticator.matchForAssertion(options)) {
-            throw new AuthenticatorMismatch(authenticatorId);
+            throw new AuthenticatorException("The authenticator with id: " + authenticator.getAaguid().toString() + " does not support the requested option",
+                    ERROR_CODE_BAD_REQUEST
+            );
         }
         return authenticator.get(options);
     }
@@ -117,12 +121,12 @@ public class DeviceService {
     private void validateIds(UUID deviceId, UUID authenticatorId) {
         Optional<Device> deviceOptional = deviceDAO.getDevice(deviceId);
         if (deviceOptional.isEmpty()) {
-            throw new EntityNotFound(DeviceService.class, deviceId.toString());
+            throw new AuthenticatorException("No device found with id:" + deviceId.toString());
         }
         Device device = deviceOptional.get();
         Optional<VirtualAuthenticator> authenticatorOptional = device.getVirtualAuthenticator(authenticatorId);
         if (authenticatorOptional.isEmpty()) {
-            throw new EntityNotFound(VirtualAuthenticator.class, authenticatorId.toString());
+            throw new AuthenticatorException("No virtual authenticator found with id:" + authenticatorId.toString(), ERROR_CODE_NOT_FOUND, 404);
         }
     }
 }

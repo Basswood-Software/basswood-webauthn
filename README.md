@@ -1,5 +1,5 @@
 # Spring Boot WebAuthn Server and Virtual FIDO2 Authenticator 
-The Basswood-Webauthn project is s reference WebAuthn/FIDO 2 server implementation, based on
+The Basswood-Webauthn project is a reference WebAuthn/FIDO 2 server implementation, based on
 [Yubico's java-webauthn-server](https://developers.yubico.com/java-webauthn-server/). The server is based 
 on Spring Boot and MySQL. It also includes a special module  that offers virtual authenticator implementation
 to facilitate automation and integration testng. The project is experimental and proof-of-concept (POC) in nature and

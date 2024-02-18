@@ -34,6 +34,7 @@ import io.basswood.webauthn.repository.RelyingPartyOriginRepository;
 import io.basswood.webauthn.repository.RelyingPartyRepository;
 import io.basswood.webauthn.repository.UserRepository;
 import io.basswood.webauthn.repository.UsernameRepository;
+import io.basswood.webauthn.repository.WebAuthnRequestRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +63,8 @@ public class WebAuthnServiceIT extends BaseRepositoryIT {
     private UserRepository userRepository;
     @Autowired
     private UsernameRepository usernameRepository;
+    @Autowired
+    private WebAuthnRequestRepository webAuthnRequestRepository;
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -70,10 +73,10 @@ public class WebAuthnServiceIT extends BaseRepositoryIT {
         RelyingPartyService relyingPartyService = new RelyingPartyService(relyingPartyRepository, relyingPartyOriginRepository);
         UserService userService = new UserService(userRepository, usernameRepository, secureRandom);
         CredentialRepositoryImpl credentialRepository = new CredentialRepositoryImpl(userService, registeredCredentialEntityRepository);
-        CacheService cacheService = new CacheService();
+        WebAuthnRequestCache webAuthnRequestCache = new WebAuthnRequestCache(webAuthnRequestRepository);
         objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
         webAuthnService = new WebAuthnService(relyingPartyService, userService, credentialRepository,
-                registeredCredentialEntityRepository, cacheService);
+                registeredCredentialEntityRepository, webAuthnRequestCache);
         authenticator = VirtualAuthenticator.builder()
                 .aaguid(UUID.randomUUID())
                 .attachment(AuthenticatorAttachment.PLATFORM)

@@ -56,14 +56,14 @@ public class WebAuthnService {
     private UserService userService;
     private CredentialRepositoryImpl credentialRepository;
     private RegisteredCredentialEntityRepository registeredCredentialEntityRepository;
-    private CacheService cacheService;
+    private WebAuthnRequestCache webAuthnRequestCache;
 
-    public WebAuthnService(RelyingPartyService relyingPartyService, UserService userService, CredentialRepositoryImpl credentialRepository, RegisteredCredentialEntityRepository registeredCredentialEntityRepository, CacheService cacheService) {
+    public WebAuthnService(RelyingPartyService relyingPartyService, UserService userService, CredentialRepositoryImpl credentialRepository, RegisteredCredentialEntityRepository registeredCredentialEntityRepository, WebAuthnRequestCache webAuthnRequestCache) {
         this.relyingPartyService = relyingPartyService;
         this.userService = userService;
         this.credentialRepository = credentialRepository;
         this.registeredCredentialEntityRepository = registeredCredentialEntityRepository;
-        this.cacheService = cacheService;
+        this.webAuthnRequestCache = webAuthnRequestCache;
     }
 
     public PublicKeyCredentialCreationOptions startRegistration(String registrationId, String rpOrigin, RegistrationRequestDTO request) {
@@ -78,7 +78,8 @@ public class WebAuthnService {
                 .build();
 
         PublicKeyCredentialCreationOptions creationOptions = relyingParty.startRegistration(startRegistrationOptions);
-        cacheService.put(registrationId, creationOptions);
+        webAuthnRequestCache.saveRequest(registrationId, creationOptions);
+        //cacheService.put(registrationId, creationOptions);
         return creationOptions;
     }
 
@@ -95,7 +96,8 @@ public class WebAuthnService {
         RelyingPartyEntity relyingPartyEntity = relyingPartyService.findByOrigin(rpOrigin)
                 .orElseThrow(() -> new EntityNotFound(RelyingPartyEntity.class, rpOrigin));
         RelyingParty rp = relyingParty(relyingPartyEntity);
-        PublicKeyCredentialCreationOptions request = cacheService.getCreateOptions(registrationId);
+        //PublicKeyCredentialCreationOptions request = cacheService.getCreateOptions(registrationId);
+        PublicKeyCredentialCreationOptions request = webAuthnRequestCache.loadRequest(registrationId, PublicKeyCredentialCreationOptions.class);
         if(request == null){
             String message = "No registration request with id:"+registrationId+" found";
             log.debug(message);
@@ -133,7 +135,7 @@ public class WebAuthnService {
                 .build();
         cre.getTransports().forEach(t -> t.setRegisteredCredentialEntity(cre));
         RegisteredCredentialEntity registeredCredentialEntity = registeredCredentialEntityRepository.save(cre);
-        cacheService.invalidateCreateOptions(registrationId);
+        //cacheService.invalidateCreateOptions(registrationId);
     }
 
     public PublicKeyCredentialRequestOptions startAssertion(String rpOrigin, String loginHandle, String username) {
@@ -147,7 +149,8 @@ public class WebAuthnService {
                 .timeout(rpEntity.getTimeout())
                 .userVerification(rpEntity.getUserVerification() != null ? UserVerificationRequirement.valueOf(rpEntity.getUserVerification().name()) : null)
                 .build());
-        cacheService.put(loginHandle, assertionRequest);
+        //cacheService.put(loginHandle, assertionRequest);
+        webAuthnRequestCache.saveRequest(loginHandle, assertionRequest);
         return assertionRequest.getPublicKeyCredentialRequestOptions();
     }
 
@@ -164,7 +167,8 @@ public class WebAuthnService {
                 .orElseThrow(() -> new EntityNotFound(RelyingPartyEntity.class, rpOrigin));
 
         RelyingParty rp = relyingParty(relyingPartyEntity);
-        AssertionRequest request = cacheService.getAssertionRequest(loginHandle);
+        //AssertionRequest request = cacheService.getAssertionRequest(loginHandle);
+        AssertionRequest request = webAuthnRequestCache.loadRequest(loginHandle, AssertionRequest.class);
         if (request == null) {
             String message = "No assertion request with id:"+loginHandle+" found";
             log.debug(message);

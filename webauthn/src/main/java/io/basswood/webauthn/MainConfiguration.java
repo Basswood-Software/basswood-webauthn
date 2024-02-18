@@ -11,16 +11,17 @@ import io.basswood.webauthn.repository.RelyingPartyOriginRepository;
 import io.basswood.webauthn.repository.RelyingPartyRepository;
 import io.basswood.webauthn.repository.UserRepository;
 import io.basswood.webauthn.repository.UsernameRepository;
+import io.basswood.webauthn.repository.WebAuthnRequestRepository;
 import io.basswood.webauthn.rest.JWKController;
 import io.basswood.webauthn.rest.JWTController;
 import io.basswood.webauthn.rest.RelyingPartyController;
 import io.basswood.webauthn.rest.UserController;
 import io.basswood.webauthn.rest.WebAuthnController;
 import io.basswood.webauthn.security.JWTFilter;
-import io.basswood.webauthn.service.CacheService;
 import io.basswood.webauthn.service.JWKService;
 import io.basswood.webauthn.service.RelyingPartyService;
 import io.basswood.webauthn.service.UserService;
+import io.basswood.webauthn.service.WebAuthnRequestCache;
 import io.basswood.webauthn.service.WebAuthnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +56,8 @@ public class MainConfiguration {
     @Autowired
     private JWKRepository jwkRepository;
     @Autowired
+    private WebAuthnRequestRepository webAuthnRequestRepository;
+    @Autowired
     private SecurityConfigurationProperties securityConfigurationProperties;
 
     @Autowired
@@ -80,11 +83,6 @@ public class MainConfiguration {
         return new WebauthnApplicationListener(jwkService(), securityConfigurationProperties);
     }
     @Bean
-    public CacheService cacheService() {
-        return new CacheService();
-    }
-
-    @Bean
     public UserService userService() {
         return new UserService(userRepository, usernameRepository, secureRandom());
     }
@@ -106,13 +104,18 @@ public class MainConfiguration {
                 userService(),
                 credentialRepository(),
                 registeredCredentialEntityRepository,
-                cacheService()
+                webAuthnRequestCache()
         );
     }
 
     @Bean
     public JWKService jwkService(){
         return new JWKService(jwkRepository);
+    }
+
+    @Bean
+    public WebAuthnRequestCache webAuthnRequestCache() {
+        return new WebAuthnRequestCache(webAuthnRequestRepository);
     }
 
     // Filter

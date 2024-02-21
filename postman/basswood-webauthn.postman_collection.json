@@ -1,0 +1,1587 @@
+{
+	"info": {
+		"_postman_id": "e6c444ef-367e-4b08-9611-8f3bd0cd3ac4",
+		"name": "basswood-webauthn",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user-management",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE user - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"userHandle\", response.userHandle);",
+									"pm.environment.set(\"userName\", response.usernames[0].username);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userHandle\" : \"{{$randomUUID}}\",\n    \"displayName\": \"Homer Simpson\",\n    \"usernames\" : [\n        {\n            \"username\" : \"homer.simpson@aol.com\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/user",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/user/{{userHandle}}",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"user",
+								"{{userHandle}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by Username",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/user?username={{userName}}",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"user"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "{{userName}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "The APIs for User management. All APIs in this folder require a JWT Bearer token Authorization header with role user_manager."
+		},
+		{
+			"name": "rp-management",
+			"item": [
+				{
+					"name": "Create RelyingParty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE RelyingParty - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"rpId\", response.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\" : \"red.basswoodid.com\",\n    \"name\": \"Basswood Red Client\",\n    \"attestation\" : \"NONE\",\n    \"authenticatorAttachment\" : \"PLATFORM\",\n    \"residentKey\" : \"DISCOURAGED\",\n    \"userVerification\" : \"DISCOURAGED\",\n    \"allowOriginPort\" : true,\n    \"allowOriginSubdomain\" : true,\n    \"timeout\": 60000,\n    \"origins\":[ \"localhost\" ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/relying-party",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"relying-party"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get RelyingParty",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/relying-party/{{rpId}}",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"relying-party",
+								"{{rpId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "The APIs for Relying Party management. All APIs in this folder require a JWT Bearer token Authorization header with role rp_manager."
+		},
+		{
+			"name": "jwk-management",
+			"item": [
+				{
+					"name": "Create JWK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE jwk - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"kid\", response.kid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/jwk",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"jwk"
+							],
+							"query": [
+								{
+									"key": "returnPublicKeyOnly",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates a JWK key with default features. Note that this API does not take any request body and only uses default backend setup to create the key. The default setups are as below\n\n1.  An EC (Elliptic-curve) key is created.\n2.  The usage type of the key is set to SIGNATURE\n3.  The curve is set to P_256\n    \n\nThe API takes an optional boolean parameter called `returnPublicKeyOnly`. The default value for this parameter is set to true and returns only the public portion of the key. Otherwise the private portion of the key is also returned in the response payload."
+					},
+					"response": []
+				},
+				{
+					"name": "Create JWK RSA",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE jwk - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"kid\", response.kid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kty\" : \"RSA\",\n    \"use\" : \"SIGNATURE\",\n    \"length\" : \"KEY_LENGTH_3072\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/jwk",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"jwk"
+							],
+							"query": [
+								{
+									"key": "returnPublicKeyOnly",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates a RSA JWK key for signature usage with length 3072. The supported length enums are\n\n1.  KEY_LENGTH_2048 (default)\n2.  KEY_LENGTH_3072\n3.  KEY_LENGTH_4096\n    \n\nThe `length` is only applicable when `kty` is set to RSA. For type EC `length` is ignored if provided."
+					},
+					"response": []
+				},
+				{
+					"name": "Create JWK EC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE jwk ec - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"kid\", response.kid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kty\" : \"EC\",\n    \"use\" : \"ENCRYPTION\",\n    \"curve\" : \"P_384\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/jwk",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"jwk"
+							],
+							"query": [
+								{
+									"key": "returnPublicKeyOnly",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Creates an EC JWK key for encryption usage with P_384 curve. The supported ``curve`` are\n\n1.  P_256 (default)\n2.  P_384\n3.  P_521\n    \n\nThe ``curve`` is only applicable when``kty`` is set to EC. For type RSA keys the ``curve`` is ignored if provided."
+					},
+					"response": []
+				},
+				{
+					"name": "Get JWK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"GET jwk - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/jwk/{{kid}}?returnPublicKeyOnly=true",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"jwk",
+								"{{kid}}"
+							],
+							"query": [
+								{
+									"key": "returnPublicKeyOnly",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete JWK",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"DELETE jwk - Status code is 204 \", function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/jwk/{{kid}}",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"jwk",
+								"{{kid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "The APIs for JWK management. All APIs in this folder require a JWT Bearer token Authorization header with role jwk_manager."
+		},
+		{
+			"name": "jwt-managemnt",
+			"item": [
+				{
+					"name": "Create JWT With Defaults",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE jwt - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"jwt=pm.response.text()",
+									"pm.environment.set(\"apikey\", jwt)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"claimSet\" : {\n        \"roles\" : [\"user_manager\", \"rp_manager\", \"jwk_manager\", \"token_manager\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/jwt",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"jwt"
+							]
+						},
+						"description": "Creates a JWT token with default claims. The defaults for various token claims are as below\n\n| **Claim** | **Default** |\n| --- | --- |\n| subject | webauthn_admin |\n| issuer | webauthn.basswood.io |\n| audience | webauthn.basswood.io |\n| issueTime | current server time |\n| notBeforeTime | current server time |\n| expirationTime | current server time+300 seconds |\n| claimSet | none |\n\nThe default values for subject, issuer and audience claims are configurable in the webauthn server backend. See application.yaml file for details."
+					},
+					"response": []
+				},
+				{
+					"name": "Create JWT",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE jwt - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"jwt=pm.response.text()",
+									"pm.environment.set(\"apikey\", jwt)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subject\" : \"webauthn_admin\",\n    \"issuer\" : \"webauthn.basswood.io\",\n    \"audience\" : \"webauthn.basswood.io\",\n    \"jti\" : \"{{$randomUUID}}\",\n    \"expirationTime\" : \"2030-12-31T13:59:59\",\n    \"claimSet\" : {\n        \"roles\" : [\"user_manager\", \"rp_manager\", \"jwk_manager\", \"token_manager\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/jwt",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"jwt"
+							]
+						},
+						"description": "Creates a JWT token with various claims being explicitly provided. The issueTime, notBeforetime are set to default value of current server time."
+					},
+					"response": []
+				},
+				{
+					"name": "Create JWT With exp",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE jwt - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"jwt=pm.response.text()",
+									"pm.environment.set(\"apikey\", jwt)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expirationTime\" : \"2030-12-31T23:59:59\",\n    \"claimSet\" : {\n        \"roles\" : [\"user_manager\", \"rp_manager\", \"jwk_manager\", \"token_manager\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/jwt",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"jwt"
+							]
+						},
+						"description": "Creates a token with only expiration time and role claims. Rest of the claims are set to sever side default."
+					},
+					"response": []
+				}
+			],
+			"description": "Demonstrates example usage of JWT token creation. The APIs require a JWT Bearer token Authorization header with role jwt_manager."
+		},
+		{
+			"name": "device-management",
+			"item": [
+				{
+					"name": "Create Device",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE Device - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"deviceId\", response.deviceId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"deviceId\" : \"{{$randomUUID}}\",\n    \"displayName\": \"iOS Device\",\n    \"tags\" : [\"test1\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Device",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/{{deviceId}}",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"{{deviceId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Device by tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device?tag=test1",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device"
+							],
+							"query": [
+								{
+									"key": "tag",
+									"value": "test1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Authenticator Default",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE Autheticator - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"aaguid\", response.aaguid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/{{deviceId}}/authenticator",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"{{deviceId}}",
+								"authenticator"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Authenticator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE Autheticator - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"aaguid\", response.aaguid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"signatureCount\" : 2,\n    \"attachment\" : \"CROSS_PLATFORM\",\n    \"transport\" : \"usb\",\n    \"supportedAlgorithms\" : [\"ES256\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/{{deviceId}}/authenticator",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"{{deviceId}}",
+								"authenticator"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Device",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/{{deviceId}}",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"{{deviceId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Device by tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device?tag=test1",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device"
+							],
+							"query": [
+								{
+									"key": "tag",
+									"value": "test1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Devices",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/export",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"export"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove all devices",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/clear",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"clear"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "webauthn",
+			"item": [
+				{
+					"name": "01. SETUP - Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE user - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"userHandle\", response.userHandle);",
+									"pm.environment.set(\"displayName\", response.displayName);",
+									"pm.environment.set(\"userName\", response.usernames[0].username);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userHandle\" : \"{{$randomUUID}}\",\n    \"displayName\": \"Homer Simpson\",\n    \"usernames\" : [\n        {\n            \"username\" : \"homer.simpson@aol.com\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/user",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "02. SETUP - Create RelyingParty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE RelyingParty - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"rpId\", response.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\" : \"{{origin}}\",\n    \"name\": \"Basswood Red Client\",\n    \"attestation\" : \"NONE\",\n    \"authenticatorAttachment\" : \"PLATFORM\",\n    \"residentKey\" : \"DISCOURAGED\",\n    \"userVerification\" : \"DISCOURAGED\",\n    \"allowOriginPort\" : true,\n    \"allowOriginSubdomain\" : true,\n    \"timeout\": 60000,\n    \"origins\":[ \"localhost\", \"http://localhost:9080\", \"localhost:9080\", \"http://{{origin}}\", \"{{origin}}\" ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/relying-party",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"relying-party"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "03. SETUP - Create Device",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE Device - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"deviceId\", response.deviceId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"deviceId\" : \"{{$randomUUID}}\",\n    \"displayName\": \"iOS Device\",\n    \"tags\" : [\"test1\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "04. SETUP - Create Authenticator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"CREATE Autheticator - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"aaguid\", response.aaguid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"signatureCount\" : 1,\n    \"attachment\" : \"PLATFORM\",\n    \"transport\" : \"internal\",\n    \"supportedAlgorithms\" : [\"RS256\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/{{deviceId}}/authenticator",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"{{deviceId}}",
+								"authenticator"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "05. TEST - Registration Start",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Registration Start - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.have.header(\"registrationId\");",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"registrationId\", pm.response.headers.get(\"registrationId\"));",
+									"pm.environment.set(\"publicKey\", JSON.stringify(response));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Forwarded-Host",
+								"value": "{{origin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{userName}}\",\n    \"displayName\": \"{{displayName}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/webauthn/registration",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"webauthn",
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "06. TEST - Credential Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Registration Start - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"var credentialRegistrationDTO = JSON.stringify(response)",
+									"pm.environment.set(\"credentialRegistrationDTO\", credentialRegistrationDTO);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Forwarded-Host",
+								"value": "{{origin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{publicKey}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/credential/create?deviceId={{deviceId}}&aaguid={{aaguid}}",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"credential",
+								"create"
+							],
+							"query": [
+								{
+									"key": "deviceId",
+									"value": "{{deviceId}}"
+								},
+								{
+									"key": "aaguid",
+									"value": "{{aaguid}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "07. TEST - Registration Finish",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Registration Start - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Forwarded-Host",
+								"value": "{{origin}}",
+								"type": "text"
+							},
+							{
+								"key": "registrationId",
+								"value": "{{registrationId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{credentialRegistrationDTO}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/webauthn/registration",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"webauthn",
+								"registration"
+							],
+							"query": [
+								{
+									"key": "registrationId",
+									"value": "{{registrationId}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "08. TEST - Assertion Start",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Assertion Start - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.have.header(\"loginHandle\");",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"pm.environment.set(\"loginHandle\", pm.response.headers.get(\"loginHandle\"));",
+									"pm.environment.set(\"credentialRequestOption\", JSON.stringify(response));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Forwarded-Host",
+								"value": "{{origin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\" : \"{{userName}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/webauthn/assertion",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"webauthn",
+								"assertion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "09. TEST - Credential Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Credential Get - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);",
+									"var credentialAssertionDTO = JSON.stringify(response)",
+									"pm.environment.set(\"credentialAssertionDTO\", credentialAssertionDTO);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Forwarded-Host",
+								"value": "{{origin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{credentialRequestOption}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/credential/get?deviceId={{deviceId}}&aaguid={{aaguid}}",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"credential",
+								"get"
+							],
+							"query": [
+								{
+									"key": "deviceId",
+									"value": "{{deviceId}}"
+								},
+								{
+									"key": "aaguid",
+									"value": "{{aaguid}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "10. TEST - Assertion Finish",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Assertion Finish - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var response = JSON.parse(responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Forwarded-Host",
+								"value": "{{origin}}",
+								"type": "text"
+							},
+							{
+								"key": "loginHandle",
+								"value": "{{loginHandle}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{credentialAssertionDTO}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/webauthn/assertion",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"webauthn",
+								"assertion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "11. CLEANUP - Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"DELETE user - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/user/{{userHandle}}",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"user",
+								"{{userHandle}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "12. CLEANUP - Delete RelyingParty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"DELETE RelyingParty - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-webauthn-url-red}}/relying-party/{{rpId}}",
+							"host": [
+								"{{basswood-webauthn-url-red}}"
+							],
+							"path": [
+								"relying-party",
+								"{{rpId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "13. CLEANUP - Delete Device",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"DELETE Device - Status code is 200 \", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basswood-authenticator-url}}/device/{{deviceId}}",
+							"host": [
+								"{{basswood-authenticator-url}}"
+							],
+							"path": [
+								"device",
+								"{{deviceId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "APIs in this folder demonstrates an end to end happy path flow for the webAuth APIs. Which involves registering credentials on the server side and later make assertion against it. The folder is meant to run as an integration tests.\n\nIn this test scenario 3 entities are involved\n\n1.  POSTMAN: works as the client application - say a browser application\n2.  Authenticator: A virtual authenticator - implemented as a web application. Like an actual authenticator it can store credential and later produce signature for assertion\n3.  WebAuthn Server: The server APIs that are under test. Objective of this postman collection folder is to test the Registration and Assertion APIs of the\n    \n\n**Test and Setup details**\n\n1.  SETUP: Create a User in the WebAuthn server\n2.  SETUP: Create a Relying Party in the WebAuthn server\n3.  SETUP: Create a Device in the authenticator\n4.  SETUP: Create a Virtual Autheticator under the Device created in the previous Step.\n5.  TEST: Start a registration call to the server.\n6.  TEST: Use the response from the previous step to create credential in the Virtual Authenticator.\n7.  TEST: Finish the registration on the sever by sending the response from the previous step as payload.\n8.  TEST: Start Assertion by sending the username\n9.  TEST: Use the server challenge payload from the previous step to get signature from the authenticator.\n10.  TEST: Send assertion response from the previous step to the server for verification.\n11.  CLEANUP: delete the User\n12.  CLEANUP: delete the Relying Party\n13.  CLEANUP: delete the Device and Virtual Autheticator"
+		}
+	]
+}

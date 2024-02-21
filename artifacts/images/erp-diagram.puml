@@ -1,0 +1,38 @@
+@startuml
+entity User{
+	* userhandle
+    --
+    displayName
+}
+entity Username{
+	* id
+    --
+    * username
+    * userHandle
+}
+entity RelyingPartyEntity{
+	* id
+    --
+    * name
+}
+
+entity RelyingPartyOrigin{
+	* id
+    --
+    * origin
+    * rpId
+}
+entity RegisteredCredentialEntity{
+	* crednetialId
+    --
+    * userHandle
+    * publicKey
+    * publicKeyCose
+    * clientDataJson
+}
+
+User ||--|{ Username
+User ||--o{ RegisteredCredentialEntity
+RelyingPartyEntity ||--|{ RelyingPartyOrigin
+
+@enduml

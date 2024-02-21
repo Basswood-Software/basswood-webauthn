@@ -1,0 +1,46 @@
+basswood:
+  datasource:
+    url: jdbc:mysql://localhost:3306/webauthn_basswood
+    username: basswood
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    keystore:
+      keystore-file: classpath:/secrets/basswood-not-for-production-keystore.p12
+      keystore-config-file: classpath:/secrets/keystore-config.json
+      load-jwk-file-on-startup: false
+      test-jwk-file: classpath:/secrets/jwk-for-testing.json
+    jwt:
+      filter:
+        disable: false
+      default-subject: webauthn_admin
+      default-issuer: webauthn.basswood.io
+      default-audience: webauthn.basswood.io
+      default-lifetime-seconds: 300
+      print-new-token-on-startup: false
+spring:
+  application:
+    name: webauthn
+  main:
+    banner-mode: off
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+server:
+  port: 9080
+logging:
+  config: log4j2-spring.xml
+#  level:
+#    ROOT: info
+
+management:
+  health:
+    diskspace:
+      enabled: false
+  endpoint:
+    health:
+      show-details: never

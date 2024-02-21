@@ -1,0 +1,24 @@
+{
+  "publicKeyCredentialRequestOptions": {
+    "challenge": "xzBTOExJL-JGQovaqpKn4e66bMYLhrJ1004-zM3qaxk",
+    "timeout": 300,
+    "rpId": "example.com",
+    "allowCredentials": [
+      {
+        "type": "public-key",
+        "id": "a951d907-aa0b-461e-8cdf-96559b358a9bZXhhbXBsZS5jb20",
+        "transports": [
+          "internal"
+        ]
+      }
+    ],
+    "userVerification": null,
+    "extensions": {
+      "appid": null,
+      "largeBlob": null,
+      "uvm": null
+    }
+  },
+  "username": "homer.simpson@gmail.com",
+  "userHandle": null
+}

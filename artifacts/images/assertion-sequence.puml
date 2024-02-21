@@ -1,0 +1,23 @@
+@startuml
+actor User as user
+participant Client as client
+participant Authenticator as authenticator
+participant WebAuthnServer as server #99FF99
+database MySQL as db #99FF99
+
+user -> client : Request Login
+client -> server : POST /webauthn/assertion (AssertionRequestDTO)
+server -> db : validate User and RelyingParty
+db -> server: return User, RelyingParty
+server -> server : create AssertionRequest and store in memory
+server -> client : AssertionRequest and loginHandle (Header)
+client -> authenticator : credentials.get()
+authenticator -> user : Request user presence via password, pin or biometrics
+user -> authenticator : consent via pin, password or biometrics
+authenticator -> client: PublicKeyCredential
+client -> server : POST /webauthn/assertion (PublicKeyCredential and loginHandle header)
+server -> server : validate assertion data against stored credentials
+server -> db : save credential - signature count.
+db -> server :
+server ->  client: 200 OK AssertionResult
+@enduml

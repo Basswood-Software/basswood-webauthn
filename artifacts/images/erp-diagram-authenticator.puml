@@ -1,0 +1,34 @@
+@startuml
+entity Device{
+	* deviceId
+    --
+    displayName
+    tags[]
+    authenticators[]
+}
+entity VirtualAuthenticator{
+	* aaguid
+    --
+    * signatureCount
+    * attachment
+    * authenticatorTransport
+    * supportedAlgorithms[]
+    * key
+}
+entity CredentialRepository{
+	* Map repository
+    --
+}
+entity Credential{
+	* credentialId
+    --
+	* userId
+	* rpId
+    * key
+}
+
+Device ||--o{ VirtualAuthenticator
+VirtualAuthenticator ||--|{ CredentialRepository
+CredentialRepository ||--o{ Credential
+
+@enduml

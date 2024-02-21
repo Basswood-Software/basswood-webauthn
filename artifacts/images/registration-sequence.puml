@@ -1,0 +1,23 @@
+@startuml
+actor User as user
+participant Client as client
+participant Authenticator as authenticator
+participant WebAuthnServer as server #99FF99
+database MySQL as db #99FF99
+
+user -> client : Request Registration
+client -> server : POST /webauthn/registration
+server -> db : validate user or create new if needed
+db -> server: return valid User
+server -> server : create registration metadata and store in memory
+server -> client : PublicKeyCredentialCreationOptions and registrationId(Header)
+client -> authenticator : credentials.create()
+authenticator -> user : Request user presence via password, pin or biometrics
+user -> authenticator : consent via pin, password or biometrics
+authenticator -> client: PublicKeyCredential
+client -> server : POST /webauthn/registration (PublicKeyCredential and registrationId header)
+server -> db : Save User Credential
+db -> server :
+server ->  client: 200 OK
+
+@enduml

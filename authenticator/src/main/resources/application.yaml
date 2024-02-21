@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: authenticator
+  main:
+    banner-mode: off
+server:
+  port: 9090
+logging:
+  config: log4j2-spring.xml
+
+management:
+  health:
+    diskspace:
+      enabled: false
+  endpoint:
+    health:
+      show-details: never

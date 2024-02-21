@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.1.7</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>io.basswood.webauthn</groupId>
+    <artifactId>basswood-webauthn</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <name>Basswood Webauthn Parent</name>
+    <description>Parent project for all the webauthn projects</description>
+    <packaging>pom</packaging>
+    <modules>
+        <module>webauthn</module>
+        <module>authenticator</module>
+        <module>authenticator-lib</module>
+    </modules>
+    <properties>
+        <!-- override spring boot dependency versions -->
+        <spring-framework.version>6.1.3</spring-framework.version>
+        <snakeyaml.version>2.0</snakeyaml.version>
+        <json-path.version>2.9.0</json-path.version>
+        <!-- dependency versions-->
+        <spring.boot.version>3.1.7</spring.boot.version>
+        <java.version>21</java.version>
+        <guava.version>32.1.1-jre</guava.version>
+        <nimbus-jose-jwt.version>9.31</nimbus-jose-jwt.version>
+        <commons-lang3.version>3.13.0</commons-lang3.version>
+        <httpclient.version>4.5.14</httpclient.version>
+        <lombok.version>1.18.30</lombok.version>
+        <webauthn-server-core>2.5.0</webauthn-server-core>
+        <junit.jupiter.version>5.9.1</junit.jupiter.version>
+        <bcprov.jdk18on.version>1.77</bcprov.jdk18on.version>
+        <cose.java.version>1.1.0</cose.java.version>
+        <cbor.version>4.5.2</cbor.version>
+        <mysql.connector.j.version>8.2.0</mysql.connector.j.version>
+        <org.testcontainers.version>1.19.4</org.testcontainers.version>
+        <rest-assured.version>5.4.0</rest-assured.version>
+        <jackson.version>2.15.3</jackson.version>
+        <!-- plugin versions-->
+        <maven-assembly-plugin.verison>3.6.0</maven-assembly-plugin.verison>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>nimbus-jose-jwt</artifactId>
+                <version>${nimbus-jose-jwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.yubico</groupId>
+                <artifactId>webauthn-server-core</artifactId>
+                <version>${webauthn-server-core}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.jupiter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bcprov.jdk18on.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.augustcellars.cose</groupId>
+                <artifactId>cose-java</artifactId>
+                <version>${cose.java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.upokecenter</groupId>
+                <artifactId>cbor</artifactId>
+                <version>${cbor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql.connector.j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${org.testcontainers.version}</version>
+            </dependency>            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>mysql</artifactId>
+                <version>${org.testcontainers.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${org.testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${rest-assured.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

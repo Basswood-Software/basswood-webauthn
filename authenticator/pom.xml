@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>io.basswood.webauthn</groupId>
 		<artifactId>basswood-webauthn</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>io.basswood.webauthn</groupId>
 	<artifactId>authenticator</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>authenticator</name>
 	<description>Basswood Virtual FIDO2 Authenticator</description>
 	<properties>

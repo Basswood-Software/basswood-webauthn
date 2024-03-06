@@ -25,7 +25,7 @@ Spring Boot this could be a good starting point. But clear understanding of FIDO
 
 ## Checkout
 ```shell
-git clone https://github.com/basswood-admin/basswood-webauthn.git/
+git clone https://github.com/Basswood-Software/basswood-webauthn.git
 ```
 ## Docker Build & Deployment
 ```shell
@@ -344,6 +344,7 @@ curl --location \
 </details>
 ------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------
+
 #### Create JWK
 <details>
 <summary><code>POST /jwk</code><code>(Create a new JSON Web Key)</code></summary>
@@ -440,6 +441,7 @@ curl --location --request GET 'http://red.basswoodid.com:9080/jwk/c0bdf4fb-3f39-
 </details>
 ------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------
+
 #### Create JWT
 <details>
 <summary><code>POST /jwt</code><code>(Create a new JSON Web Token)</code></summary>
@@ -618,6 +620,7 @@ curl --location --request POST 'http://red.basswoodid.com:9080/webauthn/registra
 </details>
 ------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------
+
 #### Registration Finish
 <details>
 <summary><code>POST /webauthn/registration</code><code>(Registration Finish)</code></summary>
